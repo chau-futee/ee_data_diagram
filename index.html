@@ -34,11 +34,7 @@
   .legend{display:flex;flex-wrap:wrap;gap:14px;margin:4px 0 0}
   .legend span{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:#42506b;font-weight:500}
   .dot{width:12px;height:12px;border-radius:3px;display:inline-block}
-  .legend span.awaiting{opacity:.6;font-style:italic}
-  /* has records, but none inside the selected window */
-  .legend span.outside{opacity:.55}
-  .legend span.outside .dot{opacity:.45}
-  .winbar{margin-bottom:10px}
+  .winbar{display:inline-flex;flex-wrap:wrap;gap:8px;align-items:center}
   .winbar .winlbl{display:inline-flex;align-items:center;justify-content:center;
     padding:0 12px;min-width:88px;font-size:12.5px;font-weight:700;color:var(--ink)}
   .winbar .winnav button{min-width:30px}
@@ -67,8 +63,8 @@
   .tlscroll::-webkit-scrollbar-thumb{background:#c3cbd9;border-radius:99px;border:3px solid var(--card)}
   .tlscroll::-webkit-scrollbar-track{background:transparent}
   /* 3 years of content, 2 years visible => content is 1.5x the visible track */
-  /* --zoom = how many screenfuls of track: 1 = all 3 years, 1.5 = 2 years, 3 = 1 year */
-  .tlgrid{width:calc(120px + (100% - 120px) * var(--zoom,1));min-width:100%}
+  /* the track always fills its column; the time window decides how many months share it */
+  .tlgrid{width:100%}
   .stick{position:sticky;left:0;z-index:6;background:var(--card)}
   .lanerow{display:grid;grid-template-columns:120px 1fr;align-items:center;border-top:1px solid var(--line)}
   .lanerow:last-child{border-bottom:1px solid var(--line)}
@@ -109,7 +105,7 @@
   .gridoverlay i.ystart{border-left-style:solid;border-left-color:var(--grid-yr)}
   /* ---- current-date line -------------------------------------------
      Shares the track's coordinate space with .gridoverlay (left:120px)
-     so it survives zoom and horizontal scroll without recalculation.
+     so it survives horizontal scroll without recalculation.
      The LINE is pointer-events:none and painted below the markers, so it
      never eats a hover. Only the FLAG is interactive. */
   .nowaxis{margin-top:1px}
@@ -243,7 +239,7 @@
           <ul>
             <li>The <b>window</b> control on the Timeline and Cyclical tabs picks how much of the calendar both views show: <b>1</b>, <b>2</b> or <b>3</b> years. The two views always show the same period — changing it on one changes it on the other.</li>
             <li>At 2 or 3 years the ring is <b>partitioned</b>, with a divider and a year label at each January.</li>
-            <li>A system with records outside the chosen window is greyed in the legend and labelled in its lane, so a narrow window never looks like missing data.</li>
+            <li>A system with records outside the chosen window is labelled in its lane, so a narrow window never looks like missing data.</li>
           </ul>
         </div>
         <div>
@@ -276,21 +272,15 @@
       <div class="note viewnote">
         <b>Timeline detail — the calendar view.</b> One lane per system across the selected window.
         <ul>
-          <li><b>Window</b> sets the period, and the Cyclical tab follows it. <b>Track width</b> is separate: it trades horizontal scrolling for legibility when a month cell is too narrow for its labels.</li>
+          <li><b>Window</b> sets the period, and the Cyclical tab follows it. Narrowing the window is what relieves crowding: at one year each month cell gets three times the width it has at three.</li>
           <li><b>Month grid</b> switches itself off when a month cell is too narrow to read as a guide; the hint next to it says how narrow.</li>
           <li>Small dots with no label are crowded milestones — hover for the name, or use <b>Show all labels</b>.</li>
           <li>The <b>date handle</b> above the lanes is draggable. Focus it and use ← → for a day, shift + ← → for a month, Home to return to today. It turns amber once moved, and a reload always restores today.</li>
         </ul>
       </div>
       <div class="card">
-        <div data-winbar></div>
         <div class="tlbar">
-          <span class="hint">Track width</span>
-          <span class="grp" id="zoomGrp">
-            <button type="button" data-z="1" class="on">Fit</button>
-            <button type="button" data-z="1.5">1.5&times;</button>
-            <button type="button" data-z="3">3&times;</button>
-          </span>
+          <span data-winbar></span>
           <span class="grp">
             <button type="button" id="allLbl">Show all labels</button>
           </span>
@@ -339,7 +329,7 @@
           <li><span id="ringNowLine"></span></li>
         </ul>
       </div>
-      <div data-winbar></div>
+      <div class="tlbar"><span data-winbar></span></div>
       <div class="card ringcard">
         <svg id="donut" viewBox="-45 -45 650 650" width="100%"></svg>
       </div>

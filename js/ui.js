@@ -12,7 +12,7 @@
    ============================================================================= */
 
 import {
-  months, SPAN, RING, NOW_COL, chainIds, VIEWS,
+  months, RING, NOW_COL, chainIds, VIEWS,
   NUDGE_OVERLAP, MIN_CELL, MIN_GAP, LABEL_W, PAD, LANE_MAX, RESERVE, polar,
   WINDOW_SPANS, DEFAULT_WINDOW_YEARS, defaultStartYear, clampWindow,
   spanMonths, windowLabel, degPerMonth, firstYear, lastYear
@@ -72,7 +72,7 @@ function syncWindowControls() {
 
 function initWindowControls() {
   document.querySelectorAll('[data-winbar]').forEach(bar => {
-    bar.classList.add('tlbar', 'winbar');
+    bar.classList.add('winbar');
     bar.innerHTML = windowBarHTML();
     bar.addEventListener('click', e => {
       const b = e.target.closest('button');
@@ -232,7 +232,7 @@ function updateGrid() {
   lanes.classList.toggle('grid', on);
   btn.classList.toggle('on', on);
   hint.textContent = !fits && cell
-    ? `Month grid off — a month is only ${cell.toFixed(0)}px wide here (needs ${MIN_CELL}px). Widen the track or pick a shorter window.`
+    ? `Month grid off — a month is only ${cell.toFixed(0)}px wide here (needs ${MIN_CELL}px). Pick a shorter window or widen the browser.`
     : '';
 }
 
@@ -283,8 +283,10 @@ const absM = d => (d.getFullYear() - win.startYear) * 12 + d.getMonth();
 const sameDay = (a, b) => a && b && a.getFullYear() === b.getFullYear()
   && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 const fmt = d => `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
-const fmtShort = d => `${d.getMonth() + 1}/${d.getDate()}`;
-const fmtMY = d => `${d.getMonth() + 1}/${String(d.getFullYear()).slice(-2)}`;
+/* The callout on BOTH views. It used to read m/d on the timeline and m/yy on
+   the ring, which put the same marker in two formats that happened to look
+   alike — 9/10 and 9/26 differ only in what the second number means. */
+const fmtTag = d => `${d.getMonth() + 1}/${d.getDate()}/${String(d.getFullYear()).slice(-2)}`;
 const inWin = d => absM(d) >= 0 && absM(d) < spanMonths(win);
 
 const today = (() => {
@@ -350,7 +352,7 @@ function drawRingSpoke() {
              stroke-dasharray="5 4" opacity=".75"/>`
     + `<circle cx="${x2}" cy="${y2}" r="4" fill="${col}"/>`
     + `<text x="${tx}" y="${ty}" font-size="11" font-weight="700" fill="${col}"
-             text-anchor="middle" dominant-baseline="middle">${fmtMY(currentDate)}</text>`;
+             text-anchor="middle" dominant-baseline="middle">${fmtTag(currentDate)}</text>`;
 }
 
 function renderNowLine() {
@@ -361,7 +363,7 @@ function renderNowLine() {
 
   nowFlag.style.left = pct + '%';
   nowRule.style.left = pct + '%';
-  nowFlag.textContent = fmtShort(currentDate);
+  nowFlag.textContent = fmtTag(currentDate);
   nowFlag.classList.toggle('nowmoved', !isHome);
   nowRule.parentElement.classList.toggle('nowmoved', !isHome);
   nowFlag.setAttribute('aria-valuetext', (isHome ? 'Today, ' : '') + fmt(currentDate));
@@ -438,15 +440,6 @@ export function initUI() {
   initWindowControls();
 
   document.getElementById('chainBtn').addEventListener('click', toggleChain);
-
-  const grp = document.getElementById('zoomGrp');
-  grp.addEventListener('click', e => {
-    const b = e.target.closest('button');
-    if (!b) return;
-    [...grp.querySelectorAll('button')].forEach(x => x.classList.toggle('on', x === b));
-    document.querySelector('.tlgrid').style.setProperty('--zoom', b.dataset.z);
-    layoutAll();
-  });
 
   document.getElementById('gridBtn')
     .addEventListener('click', () => { gridWanted = !gridWanted; updateGrid(); });

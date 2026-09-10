@@ -87,7 +87,7 @@ function validate(events) {
 function renderWindow() {
   const shown = ALL.filter(e => inWindow(e, win));
   placeEvents(shown, win);
-  drawLegend(shown, ALL, win);
+  drawLegend();
   drawDonut(shown, ALL, win);
   drawTimeline(shown, ALL, win);
   refreshChrome();
