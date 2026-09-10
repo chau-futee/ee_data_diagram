@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Donut - Layered Concept (Straw-man)</title>
+<!-- CSS is still inline in this file. Splitting it out is the next step. -->
+<style>
+  :root{
+    /* --etrm:#7C4DBC; --pa:#2E6FC7; --deer:#5F9E3F; --pg:#E8912A;
+    --acc:#2FA3A8; --cet:#E24A4A; --cns:#B84A96; --cpucp:#4A5568; */
+
+    --ink:#1f2733; --muted:#647087; --line:#e3e7ee; --bg:#f6f8fb; --card:#ffffff;
+    /* month grid: deliberately fainter than --line so it sits behind the data */
+    --grid:#eaeef4; --grid-yr:#dbe1ea;
+    /* current-date line: orange when it really is today, lighter ink once dragged.
+       Keep in sync with NOW_COL in the script - the ring spoke is SVG and cannot
+       read these variables. */
+    --now:#C1741A; --now-moved:#5B6473;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.5}
+  header{padding:26px clamp(16px,2.5vw,40px) 18px;background:linear-gradient(180deg,#fff, #fbfcfe);border-bottom:1px solid var(--line)}
+  h1{margin:0 0 4px;font-size:22px;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:14px;max-width:820px}
+  .tag{display:inline-block;background:#eef2f8;color:#42506b;font-size:11px;font-weight:600;
+    padding:3px 9px;border-radius:999px;margin-bottom:12px;letter-spacing:.03em;text-transform:uppercase}
+  .wrap{padding:24px clamp(16px,2.5vw,40px) 56px;max-width:none;margin:0}
+  .toggle{display:inline-flex;background:#eaeef4;border-radius:10px;padding:4px;margin:6px 0 20px}
+  .toggle button{border:0;background:transparent;padding:9px 18px;border-radius:7px;font-size:14px;
+    font-weight:600;color:var(--muted);cursor:pointer;transition:.15s}
+  .toggle button.active{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(20,30,50,.12)}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin:4px 0 0}
+  .legend span{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:#42506b;font-weight:500}
+  .dot{width:12px;height:12px;border-radius:3px;display:inline-block}
+  .legend span.awaiting{opacity:.6;font-style:italic}
+  /* has records, but none inside the selected window */
+  .legend span.outside{opacity:.55}
+  .legend span.outside .dot{opacity:.45}
+  .winbar{margin-bottom:10px}
+  .winbar .winlbl{display:inline-flex;align-items:center;justify-content:center;
+    padding:0 12px;min-width:88px;font-size:12.5px;font-weight:700;color:var(--ink)}
+  .winbar .winnav button{min-width:30px}
+  .legend-top{margin-bottom:18px}
+  /* shown only if data/events.json fails to load */
+  .loaderr{background:#fff4f4;border:1px solid #e9c4c4;border-radius:12px;
+    padding:14px 16px;margin-bottom:18px;font-size:13px;color:#7a2b2b}
+  .loaderr code{background:#fbe9e9;padding:1px 5px;border-radius:4px;font-size:12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;
+    box-shadow:0 1px 2px rgba(20,30,50,.04)}
+  .view{display:none}
+  .view.active{display:block}
+  .panel{display:grid;grid-template-columns:1fr;gap:26px;align-items:start}
+  /* to restore the commented-out notes sidebar, change the line above back to: 1fr 300px */
+  .note{font-size:13px;color:var(--muted);background:#f7f9fc;border:1px solid var(--line);
+    border-radius:12px;padding:14px 16px}
+  .note b{color:var(--ink)}
+  .tip{position:fixed;pointer-events:none;background:#1f2733;color:#fff;font-size:12.5px;
+    padding:8px 11px;border-radius:8px;max-width:240px;opacity:0;transition:opacity .12s;z-index:20;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+  .tip b{display:block;margin-bottom:2px}
+  /* timeline */
+  /* timeline: horizontal scroller with a frozen lane-label column */
+  .tlscroll{overflow-x:auto;overflow-y:hidden;padding-bottom:8px;
+    scrollbar-color:#c3cbd9 transparent}
+  .tlscroll::-webkit-scrollbar{height:11px}
+  .tlscroll::-webkit-scrollbar-thumb{background:#c3cbd9;border-radius:99px;border:3px solid var(--card)}
+  .tlscroll::-webkit-scrollbar-track{background:transparent}
+  /* 3 years of content, 2 years visible => content is 1.5x the visible track */
+  /* --zoom = how many screenfuls of track: 1 = all 3 years, 1.5 = 2 years, 3 = 1 year */
+  .tlgrid{width:calc(120px + (100% - 120px) * var(--zoom,1));min-width:100%}
+  .stick{position:sticky;left:0;z-index:6;background:var(--card)}
+  .lanerow{display:grid;grid-template-columns:120px 1fr;align-items:center;border-top:1px solid var(--line)}
+  .lanerow:last-child{border-bottom:1px solid var(--line)}
+  .lanecell{position:sticky;left:0;z-index:6;background:var(--card);display:flex;align-items:center;
+    align-self:stretch}
+  /* Fixed height on every lane label so all boxes match regardless of text length.
+     Centring is done by flex, so vertical padding is no longer what sets the height. */
+  .lanelabel{font-size:12.5px;font-weight:700;color:#fff;padding:0 8px;border-radius:8px;
+    margin:8px 12px 8px 0;flex:1;height:34px;display:flex;align-items:center;justify-content:center;
+    white-space:nowrap;line-height:1}
+  .track{position:relative;height:82px}
+  .track.empty{height:52px;display:flex;align-items:center;justify-content:center}
+  .track.empty span{font-size:12px;color:var(--muted);font-style:italic}
+  .milestone{position:absolute;top:26px;transform:translate(-50%,-50%);cursor:pointer;--off:0px;--dx:0px}
+  .milestone .m-dot{width:13px;height:13px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+  .milestone.nudged .m-dot{border-style:solid;box-shadow:0 1px 3px rgba(0,0,0,.25),0 0 0 3px rgba(31,39,51,.10)}
+  .milestone .m-lbl{position:absolute;left:calc(50% + var(--dx));transform:translateX(-50%);
+    top:calc(14px + var(--off));white-space:normal;
+    font-size:10px;color:#42506b;font-weight:600;text-align:center;width:78px;line-height:1.2}
+  .milestone .m-lbl::before{content:"";position:absolute;left:calc(50% - var(--dx));
+    top:calc(-6px - var(--off));width:1px;height:calc(6px + var(--off));background:#cfd6e2}
+  .milestone:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:4px}
+  /* s:0 -> dot only. The label still exists in the DOM for screen readers and for
+     the reveal-all toggle; it is simply not painted. */
+  .milestone[data-s="0"] .m-lbl{display:none}
+  #lanes.showall .milestone[data-s="0"] .m-lbl{display:block;opacity:.62}
+  .milestone[data-s="0"] .m-dot{width:9px;height:9px;border-width:1.5px}
+  /* ---- month grid overlay -------------------------------------------
+     One overlay for all lanes (36 elements) rather than 36 per track.
+     Sits in the flow before the rows, so absolutely-positioned markers
+     paint above it, and pointer-events:none keeps hovers working. */
+  #lanes{position:relative}
+  .gridoverlay{position:absolute;left:120px;right:0;top:0;bottom:0;display:flex;
+    pointer-events:none;opacity:0;transition:opacity .15s}
+  #lanes.grid .gridoverlay{opacity:1}
+  .gridoverlay i{flex:1;border-left:1px dashed var(--grid)}
+  .gridoverlay i:first-child{border-left:0}
+  .gridoverlay i.ystart{border-left-style:solid;border-left-color:var(--grid-yr)}
+  /* ---- current-date line -------------------------------------------
+     Shares the track's coordinate space with .gridoverlay (left:120px)
+     so it survives zoom and horizontal scroll without recalculation.
+     The LINE is pointer-events:none and painted below the markers, so it
+     never eats a hover. Only the FLAG is interactive. */
+  .nowaxis{margin-top:1px}
+  .nowtrack{position:relative;height:24px}
+  .nowflag{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap;user-select:none;
+    background:var(--now);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.01em;
+    padding:3px 9px;border-radius:999px;cursor:grab;touch-action:none;
+    box-shadow:0 1px 3px rgba(20,30,50,.28);z-index:7}
+  .nowflag:active{cursor:grabbing}
+  .nowflag::after{content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);
+    border:5px solid transparent;border-top-color:var(--now)}
+  .nowflag:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+  .nowoverlay{position:absolute;left:120px;right:0;top:0;bottom:0;pointer-events:none;overflow:hidden}
+  .nowline{position:absolute;top:0;bottom:0;border-left:2px dashed var(--now);opacity:.6;
+    transform:translateX(-1px)}
+  /* moved off today = the muted ink, so a probe position is never mistaken
+     for the real current date */
+  .nowmoved{--now:var(--now-moved)}
+  .tlbar .grp button:disabled{opacity:.4;cursor:not-allowed}
+  .tlbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+  .tlbar .grp{display:inline-flex;background:#eaeef4;border-radius:9px;padding:3px}
+  .tlbar .grp button{border:0;background:transparent;padding:6px 11px;border-radius:6px;
+    font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer}
+  .tlbar .grp button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(20,30,50,.12)}
+  .tlbar .hint{font-size:12px;color:var(--muted)}
+  .axis{display:grid;grid-template-columns:120px 1fr}
+  .years{display:flex}
+  .yr{flex:1;text-align:center;font-weight:700;font-size:13px;color:#42506b;border-left:1px solid var(--line);padding:6px 0}
+  .mos{display:flex}
+  .mo{flex:1;text-align:center;font-size:9.5px;color:#9aa6ba;border-left:1px dashed #edf0f5;padding:3px 0;
+    overflow:hidden;white-space:nowrap}
+  .mo.ystart{border-left:1px solid var(--line)}
+  .chainbtn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 12px;font-size:12.5px;
+    font-weight:600;color:#42506b;cursor:pointer;margin-top:14px}
+  .chainbtn.on{background:#1f2733;color:#fff;border-color:#1f2733}
+  .dim{opacity:.16}
+  .glow{filter:drop-shadow(0 0 5px rgba(31,39,51,.5))}
+  h3{margin:0 0 8px;font-size:15px}
+  ul{margin:6px 0 0;padding-left:18px}
+  li{font-size:13px;color:#42506b;margin-bottom:5px}
+
+  /* ---- landing page ------------------------------------------------- */
+  .homecard{max-width:1100px}
+  .homecard h1{font-size:24px;margin-bottom:6px}
+  .homecard .sub{margin-bottom:4px}
+  .homegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:10px 34px;
+    margin:22px 0 18px}
+  .homegrid h3{margin-bottom:2px}
+  .note.placeholder{border-style:dashed;background:#fcfcfa;border-color:#d8ddE6}
+  .note.placeholder ul{margin-top:8px}
+  .note.placeholder li{color:var(--muted)}
+
+  /* ---- per-view description boxes ----------------------------------- */
+  .note.viewnote{margin-bottom:0}
+  .note.viewnote ul{margin-top:7px}
+  .note.viewnote li{color:var(--muted)}
+
+  /* ---- vertical fill -------------------------------------------------
+     Each visual grows into the space freed by moving the header onto the
+     landing page. The ring is square, so its size is capped by the shorter
+     of the available width and the available height. */
+  .ringcard{display:flex;justify-content:center;align-items:center}
+  #donut{max-width:clamp(320px, calc(100vh - 320px), 820px)}
+  .tablewrap{overflow:auto;max-height:calc(100vh - 300px);min-height:260px;
+    border:1px solid var(--line);border-radius:10px}
+
+  /* ---- data table ---------------------------------------------------- */
+  table{border-collapse:collapse;width:100%;font-size:12.5px}
+  th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{position:sticky;top:0;background:var(--card);z-index:2;font-size:11px;font-weight:700;
+    color:var(--muted);text-transform:uppercase;letter-spacing:.04em;
+    box-shadow:inset 0 -1px 0 var(--line)}
+  tbody tr:hover{background:#f7f9fc}
+  td.sysc{white-space:nowrap;font-weight:600}
+  td.num{white-space:nowrap;color:var(--muted)}
+  .sysdot{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:7px;
+    vertical-align:-1px}
+  .muted{color:var(--muted)}
+  .tblfoot{font-size:12px;color:var(--muted);margin-top:10px}
+  td.empties{text-align:center;color:var(--muted);font-style:italic;padding:26px 10px}
+
+  /* ---- table filters -------------------------------------------------- */
+  .filters{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end;margin-bottom:14px}
+  .filters label{display:flex;flex-direction:column;gap:4px;font-size:11px;font-weight:700;
+    color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  .filters label.grow{flex:1;min-width:220px}
+  .filters select,.filters input{font:inherit;font-size:13px;color:var(--ink);background:#fff;
+    border:1px solid var(--line);border-radius:8px;padding:7px 9px;min-width:150px}
+  .filters input{width:100%;min-width:0}
+  .filters select:focus,.filters input:focus{outline:2px solid #b9c6da;outline-offset:0}
+  .clearbtn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 14px;
+    font-size:12.5px;font-weight:600;color:#42506b;cursor:pointer}
+  .clearbtn:disabled{opacity:.4;cursor:not-allowed}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <!-- TABS FOR DIFFERENT VIEWS -->
+  <div class="toggle">
+    <button id="btnHome" class="active">⌂ Home</button>
+    <button id="btnTime">▤ Timeline View</button>
+    <button id="btnRing">◍ Cyclical View</button>
+    <button id="btnTable">▦ Table View</button>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend legend-top" id="legend"></div>
+
+  <!-- DATA LOAD FAILURE - populated by main.js, hidden otherwise -->
+  <div class="loaderr" id="loadError" hidden></div>
+
+  <!------- LANDING VIEW ------>
+  <div id="home" class="view active">
+    <div class="card homecard">
+      <div class="tag">Straw-man for discussion - built from the current dataset</div>
+      <h1>Data Donut - a layered concept</h1>
+      <div class="sub">One idea for resolving the timing-vs-dependencies tension: a clean <b>cyclical overview</b> (the "donut" — what happens across the year, at a glance) sitting on top of a <b>timeline drill-down</b> (the real multi-year detail, with a dependency chain you can trace). Same data, two zoom levels. React freely — this exists to be argued with.</div>
+
+      <div class="homegrid">
+        <div>
+          <h3>What is on each tab</h3>
+          <ul>
+            <li><b>Timeline detail</b> — every milestone on a real calendar, one lane per system. Track width, month grid, dependency trace and the draggable current-date line live here.</li>
+            <li><b>Cyclical overview</b> — the same records wrapped into a circle, to show what recurs rather than when exactly.</li>
+            <li><b>Data table</b> — every underlying record in one list, for checking the data behind both visuals.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>The time window</h3>
+          <ul>
+            <li>The <b>window</b> control on the Timeline and Cyclical tabs picks how much of the calendar both views show: <b>1</b>, <b>2</b> or <b>3</b> years. The two views always show the same period — changing it on one changes it on the other.</li>
+            <li>At 2 or 3 years the ring is <b>partitioned</b>, with a divider and a year label at each January.</li>
+            <li>A system with records outside the chosen window is greyed in the legend and labelled in its lane, so a narrow window never looks like missing data.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Before you read the dates</h3>
+          <ul>
+            <li>Positions are <b>month-precise</b>. Where several events share a month they are spread evenly across that month's cell to keep them apart — that spacing is ordering, not a day of the month.</li>
+            <li>Systems with no records show as an explicitly empty lane or ring rather than being dropped.</li>
+            <li>The current-date line is the only day-precise element on the page.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="note placeholder">
+        <b>Placeholder — to be completed before this is shared.</b>
+        <ul>
+          <li><b>Data current as of:</b> <span id="dataAsOf">TBC</span></li>
+          <li><b>Source of the milestone dates:</b> TBC</li>
+          <li><b>Owner / who to contact about a wrong date:</b> TBC</li>
+          <li><b>Update cadence:</b> TBC</li>
+          <li><b>Where this is hosted:</b> TBC</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMELINE VIEW -->
+  <div id="time" class="view">
+    <div class="panel">
+      <!-- PLACEHOLDER DESCRIPTION BOX - edit freely -->
+      <div class="note viewnote">
+        <b>Timeline detail — the calendar view.</b> One lane per system across the selected window.
+        <ul>
+          <li><b>Window</b> sets the period, and the Cyclical tab follows it. <b>Track width</b> is separate: it trades horizontal scrolling for legibility when a month cell is too narrow for its labels.</li>
+          <li><b>Month grid</b> switches itself off when a month cell is too narrow to read as a guide; the hint next to it says how narrow.</li>
+          <li>Small dots with no label are crowded milestones — hover for the name, or use <b>Show all labels</b>.</li>
+          <li>The <b>date handle</b> above the lanes is draggable. Focus it and use ← → for a day, shift + ← → for a month, Home to return to today. It turns amber once moved, and a reload always restores today.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div data-winbar></div>
+        <div class="tlbar">
+          <span class="hint">Track width</span>
+          <span class="grp" id="zoomGrp">
+            <button type="button" data-z="1" class="on">Fit</button>
+            <button type="button" data-z="1.5">1.5&times;</button>
+            <button type="button" data-z="3">3&times;</button>
+          </span>
+          <span class="grp">
+            <button type="button" id="allLbl">Show all labels</button>
+          </span>
+          <span class="grp">
+            <button type="button" id="gridBtn">Month grid</button>
+          </span>
+          <span class="hint" id="gridHint"></span>
+          <span class="hint" id="nowHint"></span>
+          <span class="hint" id="lblCount"></span>
+        </div>
+        <div class="tlscroll" id="tlscroll">
+          <div class="tlgrid">
+            <div class="axis">
+              <div class="stick"></div>
+              <div class="years" id="years"></div>
+            </div>
+            <div class="axis">
+              <div class="stick"></div>
+              <div class="mos" id="monthsAxis"></div>
+            </div>
+            <div class="axis nowaxis">
+              <div class="stick"></div>
+              <div class="nowtrack" id="nowTrack">
+                <div class="nowflag" id="nowFlag" tabindex="0" role="slider"
+                     aria-label="Current date marker. Drag, or use arrow keys to move by day, shift+arrow by month, Home to return to today."></div>
+              </div>
+            </div>
+            <div id="lanes"></div>
+          </div>
+        </div>
+        <button class="chainbtn" id="chainBtn">◆ Trace a dependency chain: MP approval → P&amp;G draft results</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RING VIEW -->
+  <div id="ring" class="view">
+    <div class="panel">
+      <!-- PLACEHOLDER DESCRIPTION BOX - edit freely -->
+      <div class="note viewnote">
+        <b>Cyclical overview — the recurring rhythm.</b> The selected window wrapped into a circle, read clockwise from January.
+        <ul>
+          <li>Rings run outer to inner in the same order as the legend above; hover any marker for its system, name and month.</li>
+          <li>Each slot is <b>one month of one year</b> — 12 slots at a 1-year window, 24 at 2 years, 36 at 3. Nothing is folded, so no slot is ambiguous.</li>
+          <li>A ring with no markers says whether the system is awaiting data entirely, or simply has nothing inside this window.</li>
+          <li><span id="ringNowLine"></span></li>
+        </ul>
+      </div>
+      <div data-winbar></div>
+      <div class="card ringcard">
+        <svg id="donut" viewBox="-45 -45 650 650" width="100%"></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA TABLE VIEW -->
+  <div id="table" class="view">
+    <div class="panel">
+      <!-- PLACEHOLDER DESCRIPTION BOX - edit freely -->
+      <div class="note viewnote">
+        <b>Data table — every record behind both visuals.</b> Built from the same array the timeline and ring read, so it cannot drift out of step with them.
+        <ul>
+          <li>Filter by <b>system</b>, by a <b>month range</b>, by <b>frequency</b>, or by searching the <b>milestone</b> text. Filters combine, and the count below the table reports what is showing.</li>
+          <li><b>Month</b> is the milestone's real position. Where several events share a month the visuals spread them across the month's cell to keep them apart — that spacing is ordering, not a day of the month.</li>
+          <li><b>Frequency</b>, <b>Reviewed by</b> and <b>Reviewed date</b> are empty columns awaiting data. Nothing is inferred into any of them; the frequency filter stays disabled until records carry values.</li>
+          <li>Use this view to check the dataset. Anything wrong here is wrong in both visuals.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="filters" id="tblFilters"></div>
+        <div class="tablewrap"><table id="dataTable"></table></div>
+        <div class="tblfoot" id="tblCount"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOOLTIP -->
+<div class="tip" id="tip"></div>
+<!-- =========================================================================
+     One entry point. main.js imports config.js, legend.js, donut.js,
+     timeline.js, table.js and ui.js, so the browser resolves the graph and
+     load order stops being something anyone has to remember.
+
+     type="module" is deferred by definition: the DOM is parsed before any of
+     this runs, so no DOMContentLoaded wrapper is needed.
+     ========================================================================= -->
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

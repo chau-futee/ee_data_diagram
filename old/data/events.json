@@ -1,0 +1,606 @@
+{
+  "schema": 1,
+  "meta": {
+    "sourceOfRecord": "PENDING - to be the SharePoint workbook. See the ETL step.",
+    "extractedFrom": "data_donut_concept_4_1.html, lines 396-469 (const EVENTS)",
+    "extractedOn": "2026-09-10",
+    "generatedBy": "manual",
+    "recordCount": 58,
+    "window": {
+      "firstYear": 2026,
+      "lastYear": 2028
+    },
+    "derivedFieldsExcluded": [
+      "f",
+      "slot",
+      "of"
+    ],
+    "notes": [
+      "f, slot and of are computed at load time by placeEvents(). Do not add them here.",
+      "2 of 58 records carry no freq value. Both are deliberate - see the options memo, Appendix B.",
+      "reviewedBy and reviewedOn carry the literal string TBD, inherited from the HTML."
+    ]
+  },
+  "events": [
+    {
+      "sys": "cet",
+      "y": 2026,
+      "m": 1,
+      "t": "Claims spec planning",
+      "s": 1,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "cet",
+      "y": 2026,
+      "m": 2,
+      "t": "CET development planning",
+      "s": 1,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "cet",
+      "y": 2026,
+      "m": 3,
+      "t": "Claims spec UAT",
+      "s": 0,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "cet",
+      "y": 2026,
+      "m": 3,
+      "t": "Claims spec testing QC",
+      "s": 0,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "cet",
+      "y": 2026,
+      "m": 3,
+      "t": "CET UAT QC",
+      "s": 0,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "cet",
+      "y": 2026,
+      "m": 3,
+      "t": "Deploy CET web development changes",
+      "s": 0,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "cet",
+      "y": 2026,
+      "m": 4,
+      "t": "CET UAT",
+      "s": 0,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "cet",
+      "y": 2026,
+      "m": 4,
+      "t": "CET Web development merge request",
+      "s": 0,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "cet",
+      "y": 2026,
+      "m": 4,
+      "t": "CET data spec update",
+      "s": 1,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "cet",
+      "y": 2026,
+      "m": 5,
+      "t": "Claims data spec update",
+      "s": 0,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "cet",
+      "y": 2026,
+      "m": 6,
+      "t": "2028 Biennial avoided cost update",
+      "s": 1,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "cet",
+      "y": 2026,
+      "m": 7,
+      "t": "CET final update",
+      "s": 0,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "cet",
+      "y": 2027,
+      "m": 12,
+      "t": "CET planning",
+      "s": 1,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "acc",
+      "y": 2026,
+      "m": 2,
+      "t": "IRP TPP base case portfolio adopted",
+      "s": 1,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "acc",
+      "y": 2026,
+      "m": 3,
+      "t": "ACC update staff proposal published",
+      "s": 0,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "acc",
+      "y": 2026,
+      "m": 3,
+      "t": "Workshop on ACC update staff proposal",
+      "s": 1,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "acc",
+      "y": 2026,
+      "m": 4,
+      "t": "Opening comments due",
+      "s": 0,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "acc",
+      "y": 2026,
+      "m": 4,
+      "t": "Reply comments due",
+      "s": 0,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "acc",
+      "y": 2026,
+      "m": 5,
+      "t": "Evidentiary hearing (if necessary)",
+      "s": 0,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "acc",
+      "y": 2026,
+      "m": 5,
+      "t": "Briefing (if necessary)",
+      "s": 0,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "acc",
+      "y": 2026,
+      "m": 6,
+      "t": "Proposed Decision published",
+      "s": 1,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "acc",
+      "y": 2026,
+      "m": 7,
+      "t": "Proposed Decision adopted",
+      "s": 0,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "acc",
+      "y": 2026,
+      "m": 7,
+      "t": "Draft Resolution (with Draft Calculator) published",
+      "s": 1,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "acc",
+      "y": 2026,
+      "m": 8,
+      "t": "Workshop on Draft ACC",
+      "s": 0,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "acc",
+      "y": 2026,
+      "m": 9,
+      "t": "Resolution adopted",
+      "s": 1,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pa",
+      "y": 2026,
+      "m": 5,
+      "t": "Q1 claims submission",
+      "s": 1,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pa",
+      "y": 2026,
+      "m": 8,
+      "t": "Q2 claims submission",
+      "s": 1,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pa",
+      "y": 2026,
+      "m": 11,
+      "t": "Q3 claims submission",
+      "s": 1,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pa",
+      "y": 2027,
+      "m": 2,
+      "t": "Q4 claims submission",
+      "s": 1,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pa",
+      "y": 2027,
+      "m": 5,
+      "t": "Q1 claims submission",
+      "s": 1,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pa",
+      "y": 2027,
+      "m": 8,
+      "t": "Q2 claims submission",
+      "s": 1,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pa",
+      "y": 2027,
+      "m": 11,
+      "t": "Q3 claims submission",
+      "s": 1,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pa",
+      "y": 2028,
+      "m": 2,
+      "t": "Q4 claims submission",
+      "s": 1,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pa",
+      "y": 2026,
+      "m": 1,
+      "t": "Claims monthly reporting submission (monthly)",
+      "s": 1,
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pa",
+      "y": 2026,
+      "m": 5,
+      "t": "Annual true up report (previous year)",
+      "s": 1,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pa",
+      "y": 2026,
+      "m": 12,
+      "t": "Biannual budget advice letter filings",
+      "s": 1,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pa",
+      "y": 2027,
+      "m": 8,
+      "t": "Mid-cycle advice letter filings",
+      "s": 1,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pa",
+      "y": 2026,
+      "m": 7,
+      "t": "Multi year budget filings submission",
+      "s": 1,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pa",
+      "y": 2026,
+      "m": 9,
+      "t": "Multi year budget filings QC",
+      "s": 1,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pg",
+      "y": 2026,
+      "m": 3,
+      "t": "P&G study launch workshop & work plan",
+      "s": 1,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pg",
+      "y": 2026,
+      "m": 5,
+      "t": "P&G measure characterization",
+      "s": 0,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pg",
+      "y": 2026,
+      "m": 5,
+      "t": "P&G goals adoption",
+      "s": 1,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pg",
+      "y": 2026,
+      "m": 8,
+      "t": "P&G scenario",
+      "s": 1,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pg",
+      "y": 2026,
+      "m": 12.8,
+      "t": "P&G draft results",
+      "s": 1,
+      "id": "pgdraft",
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pg",
+      "y": 2027,
+      "m": 1.2,
+      "t": "P&G draft results comment period",
+      "s": 0,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "pg",
+      "y": 2027,
+      "m": 4,
+      "t": "P&G proposed decision mailed",
+      "s": 1,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "etrm",
+      "y": 2026,
+      "m": 1,
+      "t": "PY2026 Measure packages are active",
+      "s": 1,
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "etrm",
+      "y": 2026,
+      "m": 1,
+      "t": "PY2026 Annual CET update",
+      "s": 0,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "etrm",
+      "y": 2026,
+      "m": 9,
+      "t": "PY2028 Measure package submissions",
+      "s": 1,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "etrm",
+      "y": 2026,
+      "m": 12,
+      "t": "PY2028 Measure package approval",
+      "s": 1,
+      "id": "app",
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "etrm",
+      "y": 2027,
+      "m": 1,
+      "t": "PY2027 Annual CET update planning",
+      "s": 0,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "etrm",
+      "y": 2027,
+      "m": 2,
+      "t": "PY2027 Annual CET update",
+      "s": 1,
+      "freq": "Annual",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "deer",
+      "y": 2026,
+      "m": 4,
+      "t": "2028 DEER scoping comment",
+      "s": 1,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "deer",
+      "y": 2026,
+      "m": 5,
+      "t": "2028 DEER scoping document",
+      "s": 0,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "deer",
+      "y": 2026,
+      "m": 7,
+      "t": "2028 Draft DEER resolution",
+      "s": 1,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "deer",
+      "y": 2026,
+      "m": 8,
+      "t": "2028 Draft DEER resolution comments",
+      "s": 0,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "deer",
+      "y": 2026,
+      "m": 10,
+      "t": "2028 Draft DEER resolution vote",
+      "s": 1,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    },
+    {
+      "sys": "deer",
+      "y": 2026,
+      "m": 12,
+      "t": "2028 Final DEER resolution",
+      "s": 1,
+      "freq": "Biennial",
+      "reviewedBy": "TBD",
+      "reviewedOn": "TBD"
+    }
+  ]
+}
