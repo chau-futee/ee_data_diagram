@@ -21,8 +21,8 @@
 export const sysOrder = ['cet', 'acc', 'pa', 'pg', 'etrm', 'deer', 'cns', 'cpucp'];
 
 export const COL = {                       // swatch, lane label, marker fill
-  etrm: '#7C4DBC', pa: '#2E6FC7', deer: '#5F9E3F', pg: '#E8912A',
-  acc: '#2FA3A8', cet: '#E24A4A', cns: '#B84A96', cpucp: '#4A5568'
+  etrm: '#5F9E3F', pa: '#556A77', deer: '#7C4DBC', pg: '#E24A4A',
+  acc: '#2FA3A8', cet: '#FCB720', cns: '#B84A96', cpucp: '#2E6FC7'
 };
 
 export const NAME = {                      // full name — legend and tooltips
@@ -32,7 +32,7 @@ export const NAME = {                      // full name — legend and tooltips
 };
 
 export const SHORT = {                     // acronym — lane box and table
-  etrm: 'eTRM', pa: 'PA', deer: 'DEER', pg: 'P&G',
+  etrm: 'eTRM', pa: 'PA Submissions', deer: 'DEER', pg: 'P&G',
   acc: 'ACC', cet: 'CET', cns: 'C&S', cpucp: 'CPUC'
 };
 

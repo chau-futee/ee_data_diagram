@@ -198,7 +198,7 @@ function fillLanes() {
    the number of cells follows the window: 12, 24 or 36.
    ---------------------------------------------------------------------------- */
 
-let gridWanted = false;
+let gridWanted = true;
 
 export function buildGrid() {
   const lanes = document.getElementById('lanes');
