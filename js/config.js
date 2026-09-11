@@ -16,8 +16,7 @@
    ============================================================================= */
 
 /* ---- systems ---------------------------------------------------------------
-   sysOrder is the source of truth for lane order, outer-to-inner on the ring
-   and top-to-bottom on the timeline.
+   sysOrder is the source of truth for lane order: outer-to-inner (ring)) and top-to-bottom (timeline).
    ---------------------------------------------------------------------------- */
 export const sysOrder = ['cet', 'acc', 'pa', 'pg', 'etrm', 'deer', 'cns', 'cpucp'];
 
@@ -33,7 +32,7 @@ export const NAME = {                      // full name — legend and tooltips
 };
 
 export const SHORT = {                     // acronym — lane box and table
-  etrm: 'eTRM', pa: 'PA Submissions', deer: 'DEER', pg: 'P&G',
+  etrm: 'eTRM', pa: 'PA', deer: 'DEER', pg: 'P&G',
   acc: 'ACC', cet: 'CET', cns: 'C&S', cpucp: 'CPUC'
 };
 

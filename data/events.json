@@ -2,7 +2,7 @@
   "schema": 1,
   "meta": {
     "sourceOfRecord": "PENDING - to be the SharePoint workbook. See the ETL step.",
-    "extractedFrom": "data_donut_concept_4_1.html, lines 396-469 (const EVENTS)",
+    "extractedFrom": "data_donut_concept_4_1.html (const EVENTS)",
     "extractedOn": "2026-09-10",
     "generatedBy": "manual one-off extraction, not yet the ETL",
     "recordCount": 58,
@@ -16,9 +16,7 @@
       "of"
     ],
     "notes": [
-      "f, slot and of are computed at load time by placeEvents(). Do not add them here.",
-      "2 of 58 records carry no freq value. Both are deliberate - see the options memo, Appendix B.",
-      "reviewedBy and reviewedOn carry the literal string TBD, inherited from the HTML."
+      "f, slot and of are computed at load time by placeEvents()."
     ]
   },
   "events": [

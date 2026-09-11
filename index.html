@@ -4,18 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Data Donut - Layered Concept (Straw-man)</title>
-<!-- CSS is still inline in this file. Splitting it out is the next step. -->
 <style>
   :root{
-    /* --etrm:#7C4DBC; --pa:#2E6FC7; --deer:#5F9E3F; --pg:#E8912A;
-    --acc:#2FA3A8; --cet:#E24A4A; --cns:#B84A96; --cpucp:#4A5568; */
-
     --ink:#1f2733; --muted:#647087; --line:#e3e7ee; --bg:#f6f8fb; --card:#ffffff;
     /* month grid: deliberately fainter than --line so it sits behind the data */
     --grid:#eaeef4; --grid-yr:#dbe1ea;
     /* current-date line: orange when it really is today, lighter ink once dragged.
-       Keep in sync with NOW_COL in the script - the ring spoke is SVG and cannot
-       read these variables. */
+       Keep in sync with NOW_COL in the script - the ring spoke is SVG and cannot read these variables. */
     --now:#C1741A; --now-moved:#5B6473;
   }
   *{box-sizing:border-box}
@@ -270,7 +265,7 @@
   <!-- TIMELINE VIEW -->
   <div id="time" class="view">
     <div class="panel">
-      <!-- PLACEHOLDER DESCRIPTION BOX - edit freely -->
+      <!-- PLACEHOLDER DESCRIPTION BOX -->
       <div class="note viewnote">
         <b>Timeline detail — the calendar view.</b> One lane per system across the selected window.
         <ul>
@@ -323,7 +318,7 @@
   <!-- RING VIEW -->
   <div id="ring" class="view">
     <div class="panel">
-      <!-- PLACEHOLDER DESCRIPTION BOX - edit freely -->
+      <!-- PLACEHOLDER DESCRIPTION BOX -->
       <div class="note viewnote">
         <b>Cyclical overview — the recurring rhythm.</b> The selected window wrapped into a circle, read clockwise from January.
         <ul>
@@ -343,7 +338,7 @@
   <!-- DATA TABLE VIEW -->
   <div id="table" class="view">
     <div class="panel">
-      <!-- PLACEHOLDER DESCRIPTION BOX - edit freely -->
+      <!-- PLACEHOLDER DESCRIPTION BOX -->
       <div class="note viewnote">
         <b>Data table — every record behind both visuals.</b> Built from the same array the timeline and ring read, so it cannot drift out of step with them.
         <ul>
