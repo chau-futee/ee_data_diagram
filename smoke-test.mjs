@@ -106,6 +106,13 @@ check('lanes flagged "no milestones in 2028"', $$('#lanes .track.empty').filter(
 check('lanes still flagged awaiting data', $$('#lanes .track.empty').filter(t => /awaiting/.test(t.textContent)).length, 2);
 check('legend unaffected by the window', $$('#legend span').length, 8);
 check('current date is outside 2028 - no ring spoke', $$('#ringNow line').length, 0);
+check('out-of-window notice is in the description box',
+  $('#nowHint').closest('.note.viewnote') !== null, true);
+check('notice is visible when today is outside the window', $('#nowHint').hidden, false);
+// date-agnostic on purpose: pinning a real date here makes the suite fail tomorrow
+check('notice names today and the window',
+  /Today \(\d{1,2} [A-Z][a-z]{2} \d{4}\) is outside 2028/.test($('#nowHint').textContent), true);
+check('notice is gone from the toolbar', $$('.tlbar #nowHint').length, 0);
 
 console.log('\n--- switch to 3 years ---');
 ui.setWindow({ years: 3 });
@@ -116,6 +123,7 @@ check('partitioned into 3', $$('#donut .yrlbl').length, 3);
 check('all events shown', $$('#lanes .milestone').length, 58);
 check('forward step disabled at the end of the data', $$('.winnav [data-step="1"]')[0].disabled, true);
 check('table still shows the full dataset', $$('#dataTable tbody tr').length, 58);
+check('notice hidden again once today is back inside the window', $('#nowHint').hidden, true);
 check('no "undefined" anywhere in the DOM', /undefined/.test(document.body.innerHTML), false);
 
 console.log(`\n${fails ? fails + ' CHECK(S) FAILED' : 'all checks passed'}`);

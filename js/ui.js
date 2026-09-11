@@ -367,8 +367,14 @@ function renderNowLine() {
   nowFlag.classList.toggle('nowmoved', !isHome);
   nowRule.parentElement.classList.toggle('nowmoved', !isHome);
   nowFlag.setAttribute('aria-valuetext', (isHome ? 'Today, ' : '') + fmt(currentDate));
-  nowHint.textContent = outside
-    ? `Today (${fmt(today)}) is outside ${windowLabel(win)} — the marker is pinned to the nearest edge of this window.`
+  /* Lives in the view's description box rather than the toolbar. Writing an
+     empty string is what hides it: `.note li:empty{display:none}` does the
+     rest, so there is no `hidden` attribute for the markup and this function
+     to disagree about. */
+  nowHint.classList.toggle('outofwindow', outside);
+  nowHint.innerHTML = outside
+    ? `Today (<b>${fmt(today)}</b>) is outside <b>${windowLabel(win)}</b> — the date handle is `
+      + 'pinned to the nearest edge of this window, and the ring draws no spoke.'
     : '';
 
   drawRingSpoke();

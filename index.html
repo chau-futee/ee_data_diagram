@@ -162,6 +162,8 @@
   .note.viewnote{margin-bottom:0}
   .note.viewnote ul{margin-top:7px}
   .note.viewnote li{color:var(--muted)}
+  .note li:empty{display:none}
+  .note li.outofwindow{color:var(--now-moved);font-weight:600}
 
   /* ---- vertical fill -------------------------------------------------
      Each visual grows into the space freed by moving the header onto the
@@ -276,6 +278,9 @@
           <li><b>Month grid</b> switches itself off when a month cell is too narrow to read as a guide; the hint next to it says how narrow.</li>
           <li>Small dots with no label are crowded milestones — hover for the name, or use <b>Show all labels</b>.</li>
           <li>The <b>date handle</b> above the lanes is draggable. Focus it and use ← → for a day, shift + ← → for a month, Home to return to today. It turns amber once moved, and a reload always restores today.</li>
+          <!-- written by renderNowLine() in ui.js. Hidden by CSS while empty, so it
+               cannot get stuck visible or stuck hidden if the two fall out of step. -->
+          <li id="nowHint"></li>
         </ul>
       </div>
       <div class="card">
@@ -288,7 +293,6 @@
             <button type="button" id="gridBtn">Month grid</button>
           </span>
           <span class="hint" id="gridHint"></span>
-          <span class="hint" id="nowHint"></span>
           <span class="hint" id="lblCount"></span>
         </div>
         <div class="tlscroll" id="tlscroll">
