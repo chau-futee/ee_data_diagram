@@ -28,7 +28,9 @@
       "s": 1,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": []
     },
     {
       "sys": "cet",
@@ -38,7 +40,15 @@
       "s": 1,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "e3 calculator"
+      ],
+      "downDeps": [
+        "cedars claims",
+        "cedars filings",
+        "etrm cet update"
+      ]
     },
     {
       "sys": "cet",
@@ -48,7 +58,9 @@
       "s": 0,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": []
     },
     {
       "sys": "cet",
@@ -58,7 +70,9 @@
       "s": 0,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": []
     },
     {
       "sys": "cet",
@@ -68,7 +82,15 @@
       "s": 0,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "e3 calculator"
+      ],
+      "downDeps": [
+        "cedars claims",
+        "cedars filings",
+        "etrm cet update"
+      ]
     },
     {
       "sys": "cet",
@@ -78,7 +100,15 @@
       "s": 0,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "e3 calculator"
+      ],
+      "downDeps": [
+        "cedars claims",
+        "cedars filings",
+        "etrm cet update"
+      ]
     },
     {
       "sys": "cet",
@@ -88,7 +118,15 @@
       "s": 0,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "e3 calculator"
+      ],
+      "downDeps": [
+        "cedars claims",
+        "cedars filings",
+        "etrm cet update"
+      ]
     },
     {
       "sys": "cet",
@@ -98,7 +136,15 @@
       "s": 0,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "e3 calculator"
+      ],
+      "downDeps": [
+        "cedars claims",
+        "cedars filings",
+        "etrm cet update"
+      ]
     },
     {
       "sys": "cet",
@@ -108,7 +154,15 @@
       "s": 1,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "e3 calculator"
+      ],
+      "downDeps": [
+        "cedars claims",
+        "cedars filings",
+        "etrm cet update"
+      ]
     },
     {
       "sys": "cet",
@@ -118,7 +172,9 @@
       "s": 0,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": []
     },
     {
       "sys": "cet",
@@ -128,7 +184,9 @@
       "s": 1,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": []
     },
     {
       "sys": "cet",
@@ -138,7 +196,14 @@
       "s": 0,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "e3 calculator"
+      ],
+      "downDeps": [
+        "cedars claims",
+        "cedars filings"
+      ]
     },
     {
       "sys": "cet",
@@ -148,7 +213,15 @@
       "s": 1,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "e3 calculator"
+      ],
+      "downDeps": [
+        "cedars claims",
+        "cedars filings",
+        "etrm cet update"
+      ]
     },
     {
       "sys": "acc",
@@ -158,7 +231,11 @@
       "s": 1,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": [
+        "cet"
+      ]
     },
     {
       "sys": "acc",
@@ -168,7 +245,11 @@
       "s": 0,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": [
+        "cet"
+      ]
     },
     {
       "sys": "acc",
@@ -178,7 +259,11 @@
       "s": 1,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": [
+        "cet"
+      ]
     },
     {
       "sys": "acc",
@@ -188,7 +273,11 @@
       "s": 0,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": [
+        "cet"
+      ]
     },
     {
       "sys": "acc",
@@ -198,7 +287,11 @@
       "s": 0,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": [
+        "cet"
+      ]
     },
     {
       "sys": "acc",
@@ -208,7 +301,11 @@
       "s": 0,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": [
+        "cet"
+      ]
     },
     {
       "sys": "acc",
@@ -218,7 +315,11 @@
       "s": 0,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": [
+        "cet"
+      ]
     },
     {
       "sys": "acc",
@@ -228,7 +329,11 @@
       "s": 1,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": [
+        "cet"
+      ]
     },
     {
       "sys": "acc",
@@ -238,7 +343,11 @@
       "s": 0,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": [
+        "cet"
+      ]
     },
     {
       "sys": "acc",
@@ -248,7 +357,11 @@
       "s": 1,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": [
+        "cet"
+      ]
     },
     {
       "sys": "acc",
@@ -258,7 +371,11 @@
       "s": 0,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": [
+        "cet"
+      ]
     },
     {
       "sys": "acc",
@@ -268,7 +385,11 @@
       "s": 1,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": [
+        "cet"
+      ]
     },
     {
       "sys": "pa",
@@ -278,7 +399,15 @@
       "s": 1,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "cet",
+        "measure package approvals"
+      ],
+      "downDeps": [
+        "potential & goals study",
+        "em&v studies"
+      ]
     },
     {
       "sys": "pa",
@@ -288,7 +417,15 @@
       "s": 1,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "cet",
+        "measure package approvals"
+      ],
+      "downDeps": [
+        "potential & goals study",
+        "em&v studies"
+      ]
     },
     {
       "sys": "pa",
@@ -298,7 +435,15 @@
       "s": 1,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "cet",
+        "measure package approvals"
+      ],
+      "downDeps": [
+        "potential & goals study",
+        "em&v studies"
+      ]
     },
     {
       "sys": "pa",
@@ -308,7 +453,15 @@
       "s": 1,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "cet",
+        "measure package approvals"
+      ],
+      "downDeps": [
+        "potential & goals study",
+        "em&v studies"
+      ]
     },
     {
       "sys": "pa",
@@ -318,7 +471,15 @@
       "s": 1,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "cet",
+        "measure package approvals"
+      ],
+      "downDeps": [
+        "potential & goals study",
+        "em&v studies"
+      ]
     },
     {
       "sys": "pa",
@@ -328,7 +489,15 @@
       "s": 1,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "cet",
+        "measure package approvals"
+      ],
+      "downDeps": [
+        "potential & goals study",
+        "em&v studies"
+      ]
     },
     {
       "sys": "pa",
@@ -338,7 +507,15 @@
       "s": 1,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "cet",
+        "measure package approvals"
+      ],
+      "downDeps": [
+        "potential & goals study",
+        "em&v studies"
+      ]
     },
     {
       "sys": "pa",
@@ -348,7 +525,15 @@
       "s": 1,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "cet",
+        "measure package approvals"
+      ],
+      "downDeps": [
+        "potential & goals study",
+        "em&v studies"
+      ]
     },
     {
       "sys": "pa",
@@ -357,7 +542,16 @@
       "t": "Claims monthly reporting submission (monthly)",
       "s": 1,
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "cet",
+        "measure package approvals"
+      ],
+      "downDeps": [
+        "cedars claims",
+        "cedars filings",
+        "etrm cet update"
+      ]
     },
     {
       "sys": "pa",
@@ -367,7 +561,15 @@
       "s": 1,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "cet",
+        "measure package approvals"
+      ],
+      "downDeps": [
+        "potential & goals study",
+        "em&v studies"
+      ]
     },
     {
       "sys": "pa",
@@ -377,7 +579,11 @@
       "s": 1,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "measure package approvals"
+      ],
+      "downDeps": []
     },
     {
       "sys": "pa",
@@ -387,7 +593,13 @@
       "s": 1,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "measure package approvals"
+      ],
+      "downDeps": [
+        "potential & goals study"
+      ]
     },
     {
       "sys": "pa",
@@ -397,7 +609,9 @@
       "s": 1,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": []
     },
     {
       "sys": "pa",
@@ -407,7 +621,9 @@
       "s": 1,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": []
     },
     {
       "sys": "pg",
@@ -417,7 +633,17 @@
       "s": 1,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "previous measure package approvals"
+      ],
+      "downDeps": [
+        "future measure package submissions",
+        "future measure package approvals",
+        "future deer resolution",
+        "potential & goals study",
+        "claims submissions"
+      ]
     },
     {
       "sys": "pg",
@@ -427,7 +653,14 @@
       "s": 0,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "previous measure package approvals"
+      ],
+      "downDeps": [
+        "mcal",
+        "bbal"
+      ]
     },
     {
       "sys": "pg",
@@ -437,7 +670,14 @@
       "s": 1,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "previous measure package approvals"
+      ],
+      "downDeps": [
+        "mcal",
+        "bbal"
+      ]
     },
     {
       "sys": "pg",
@@ -447,7 +687,14 @@
       "s": 1,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "previous measure package approvals"
+      ],
+      "downDeps": [
+        "mcal",
+        "bbal"
+      ]
     },
     {
       "sys": "pg",
@@ -458,7 +705,14 @@
       "id": "pgdraft",
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "previous measure package approvals"
+      ],
+      "downDeps": [
+        "mcal",
+        "bbal"
+      ]
     },
     {
       "sys": "pg",
@@ -468,7 +722,14 @@
       "s": 0,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "previous measure package approvals"
+      ],
+      "downDeps": [
+        "mcal",
+        "bbal"
+      ]
     },
     {
       "sys": "pg",
@@ -478,7 +739,14 @@
       "s": 1,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "previous measure package approvals"
+      ],
+      "downDeps": [
+        "mcal",
+        "bbal"
+      ]
     },
     {
       "sys": "etrm",
@@ -487,7 +755,9 @@
       "t": "PY2026 Measure packages are active",
       "s": 1,
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": []
     },
     {
       "sys": "etrm",
@@ -497,7 +767,13 @@
       "s": 0,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "cet"
+      ],
+      "downDeps": [
+        "pa systems"
+      ]
     },
     {
       "sys": "etrm",
@@ -507,7 +783,12 @@
       "s": 1,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "em&v studies",
+        "deer resolution"
+      ],
+      "downDeps": []
     },
     {
       "sys": "etrm",
@@ -518,7 +799,15 @@
       "id": "app",
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "measure package submissions"
+      ],
+      "downDeps": [
+        "pa systems",
+        "potential & goals study",
+        "cedars claims"
+      ]
     },
     {
       "sys": "etrm",
@@ -528,7 +817,9 @@
       "s": 0,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [],
+      "downDeps": []
     },
     {
       "sys": "etrm",
@@ -538,7 +829,13 @@
       "s": 1,
       "freq": "Annual",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "cet"
+      ],
+      "downDeps": [
+        "pa systems"
+      ]
     },
     {
       "sys": "deer",
@@ -548,7 +845,16 @@
       "s": 1,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "em&v studies"
+      ],
+      "downDeps": [
+        "measure package submissions",
+        "measure package approvals",
+        "em&v studies",
+        "deer database update"
+      ]
     },
     {
       "sys": "deer",
@@ -558,7 +864,16 @@
       "s": 0,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "em&v studies"
+      ],
+      "downDeps": [
+        "measure package submissions",
+        "measure package approvals",
+        "em&v studies",
+        "deer database update"
+      ]
     },
     {
       "sys": "deer",
@@ -568,7 +883,16 @@
       "s": 1,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "em&v studies"
+      ],
+      "downDeps": [
+        "measure package submissions",
+        "measure package approvals",
+        "em&v studies",
+        "deer database update"
+      ]
     },
     {
       "sys": "deer",
@@ -578,7 +902,16 @@
       "s": 0,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "em&v studies"
+      ],
+      "downDeps": [
+        "measure package submissions",
+        "measure package approvals",
+        "em&v studies",
+        "deer database update"
+      ]
     },
     {
       "sys": "deer",
@@ -588,7 +921,16 @@
       "s": 1,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "em&v studies"
+      ],
+      "downDeps": [
+        "measure package submissions",
+        "measure package approvals",
+        "em&v studies",
+        "deer database update"
+      ]
     },
     {
       "sys": "deer",
@@ -598,7 +940,16 @@
       "s": 1,
       "freq": "Biennial",
       "reviewedBy": "TBD",
-      "reviewedOn": "TBD"
+      "reviewedOn": "TBD",
+      "upDeps": [
+        "em&v studies"
+      ],
+      "downDeps": [
+        "measure package submissions",
+        "measure package approvals",
+        "em&v studies",
+        "deer database update"
+      ]
     }
   ]
 }
