@@ -19,7 +19,7 @@ import {
 const NOTSET = '__notset__';
 
 export function drawTable(events) {
-  const rows = [...events].sort((a, b) => a.f - b.f);
+  const rows = [...events].sort((a, b) => absMonth(a) - absMonth(b));
 
   /* ---- filter controls ---- */
   const sysWithData = sysOrder.filter(s => events.some(e => e.sys === s));
