@@ -70,7 +70,7 @@ export function drawTable(events) {
     document.getElementById('dataTable').innerHTML =
       `<thead><tr>
          <th>System</th><th>Milestone</th><th>Month</th><th>Frequency</th>
-         <th>Reviewed by</th><th>Reviewed date</th><th>Chain ID</th>
+         <th>Reviewed by</th><th>Reviewed date</th>
        </tr></thead><tbody>${
         shown.length
         ? shown.map(e => `<tr>
@@ -80,7 +80,7 @@ export function drawTable(events) {
             <td class="num">${e.freq ? esc(e.freq) : ''}</td>
             <td class="num">${e.reviewedBy ? esc(e.reviewedBy) : ''}</td>
             <td class="num">${e.reviewedOn ? esc(e.reviewedOn) : ''}</td>
-            <td class="num">${e.id ? esc(e.id) : '—'}</td></tr>`).join('')
+            </tr>`).join('')
         : `<tr><td colspan="7" class="empties">No milestones match these filters.</td></tr>`
       }</tbody>`;
 
