@@ -170,6 +170,18 @@ export function layoutAll() {
 
 /* ---------------------------------------------------------- vertical fill -- */
 
+/* The detail dock is fixed to the bottom of the window, so the lanes have less
+   height to grow into while it is open. It reports its own height here rather
+   than fillLanes() measuring a panel it should not have to know about. */
+let extraReserve = 0;
+export function setExtraReserve(px) {
+  const next = Math.max(0, px | 0);
+  if (next === extraReserve) return;
+  extraReserve = next;
+  document.body.style.paddingBottom = next ? next + 'px' : '';
+  layoutAll();
+}
+
 function fillLanes() {
   const time = document.getElementById('time');
   if (!time || !time.classList.contains('active')) return;
@@ -180,7 +192,7 @@ function fillLanes() {
     ? 52
     : (parseFloat(t.style.height) || t.getBoundingClientRect().height));
   const top = lanes.getBoundingClientRect().top;
-  const avail = window.innerHeight - top - RESERVE;
+  const avail = window.innerHeight - top - RESERVE - extraReserve;
   const total = nat.reduce((a, b) => a + b, 0);
   const spare = avail - total;
   if (!(spare > 8)) {

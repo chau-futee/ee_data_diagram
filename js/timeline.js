@@ -16,6 +16,7 @@ import {
   spanMonths, windowYears, windowLabel, absMonthIn, monthLabelIn, hasData, esc
 } from './config.js';
 import { showTip, hideTip } from './ui.js';
+import { openDetail } from './detail.js';
 
 /* Name the month an event belongs to. Events sharing a lane and a month are
    spread evenly across that month's cell, so the tooltip says which slot of how
@@ -91,6 +92,9 @@ export function drawTimeline(events, all, win) {
       m.tabIndex = 0;
       if (ev.id) m.dataset.id = ev.id;
       m.dataset.s = (ev.s === 0 ? '0' : '1');
+      /* _k is assigned once by initDetail() and never changes, so a click
+         resolves to one record even where two share a system and a title. */
+      m.dataset.k = ev._k;
       m.innerHTML = `<div class="m-dot" style="background:${COL[sys]}"></div>`
                   + `<div class="m-lbl">${esc(ev.t)}</div>`;
 
@@ -103,6 +107,12 @@ export function drawTimeline(events, all, win) {
         showTip({ clientX: r.left + r.width / 2, clientY: r.bottom }, html());
       });
       m.addEventListener('blur', hideTip);
+      /* Click or Enter/Space opens the detail panel. Keyboard is wired
+         explicitly because a div does not fire click on Space. */
+      m.addEventListener('click', () => openDetail(ev));
+      m.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDetail(ev); }
+      });
       track.appendChild(m);
     });
 

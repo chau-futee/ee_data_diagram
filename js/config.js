@@ -107,6 +107,12 @@ export const VIEWS = { home: 'btnHome', time: 'btnTime', ring: 'btnRing', table:
 /* where the data lives, relative to index.html */
 export const DATA_URL = 'data/events.json';
 
+/* The date-change history behind the detail panel. Joined to events.json on
+   (system, title) — see the header of detail.js for why that join is complete
+   but not unique. A failure to load this one is NOT fatal: the visuals still
+   draw, and the panel says the history is unavailable. */
+export const LOG_URL = 'data/historical_log.json';
+
 /* ---- pure helpers ---------------------------------------------------------- */
 
 /* 2.8 -> 3 (March). The fraction only ORDERS events within a month. */

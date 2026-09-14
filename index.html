@@ -196,6 +196,73 @@
   .clearbtn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 14px;
     font-size:12.5px;font-weight:600;color:#42506b;cursor:pointer}
   .clearbtn:disabled{opacity:.4;cursor:not-allowed}
+  /* ---- detail panel ---------------------------------------------------
+     One body, two containers. .dt-dock is fixed across the foot of the
+     window; .dt-float is the same content lifted out and made draggable.
+     Everything inside is shared, so the two cannot describe a record
+     differently — only frame it differently. */
+  .dt-dock,.dt-float{background:var(--card);border:1px solid var(--line);
+    font-size:13px;color:#42506b}
+  .dt-dock{position:fixed;left:0;right:0;bottom:0;z-index:30;border-width:1px 0 0;
+    border-radius:16px 16px 0 0;padding:14px clamp(16px,2.5vw,40px) 18px;
+    max-height:40vh;overflow:auto;box-shadow:0 -6px 24px rgba(20,30,50,.10)}
+  .dt-float{position:fixed;z-index:40;width:min(820px,calc(100vw - 32px));
+    max-height:70vh;overflow:auto;border-radius:14px;padding:14px 18px 18px;
+    box-shadow:0 16px 44px rgba(20,30,50,.24)}
+  .dt-float .dt-head{cursor:grab}
+  .dt-float.dragging .dt-head{cursor:grabbing}
+  .dt-dock[hidden],.dt-float[hidden]{display:none}
+
+  .dt-head{display:flex;align-items:center;gap:11px;padding-bottom:10px;
+    border-bottom:1px solid var(--line);margin-bottom:13px}
+  .dt-swatch{width:12px;height:12px;border-radius:3px;flex:none}
+  .dt-titles{display:flex;flex-direction:column;min-width:0;flex:1}
+  .dt-titles b{color:var(--ink);font-size:14.5px;line-height:1.3}
+  .dt-meta{color:var(--muted);font-size:12px}
+  /* Pinned to the marker, so it has to read as attached to the chart rather
+     than floating over it: dark like the tooltip, small, with a leader notch. */
+  .dt-chip{position:fixed;z-index:35;border:0;background:var(--ink);color:#fff;
+    font:inherit;font-size:11.5px;font-weight:600;letter-spacing:.01em;
+    padding:5px 11px;border-radius:999px;cursor:pointer;white-space:nowrap;
+    box-shadow:0 3px 12px rgba(20,30,50,.3)}
+  .dt-chip:hover{background:#33405a}
+  .dt-chip:focus-visible{outline:2px solid #fff;outline-offset:-4px}
+  .dt-chip[hidden]{display:none}
+  .dt-x{border:0;background:transparent;font-size:20px;line-height:1;color:var(--muted);
+    cursor:pointer;padding:2px 4px;border-radius:6px}
+  .dt-x:hover{background:#eef2f8;color:var(--ink)}
+
+  .dt-cols{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) minmax(0,1fr);gap:26px}
+  @media (max-width:820px){.dt-cols{grid-template-columns:1fr;gap:16px}}
+  .dt-col h4{margin:0 0 3px;font-size:12.5px;color:var(--ink)}
+  .dt-note,.dt-empty{margin:0;font-size:12px;color:var(--muted)}
+  .dt-empty{font-style:italic}
+  .dt-note{margin-bottom:7px}
+
+  /* The history really is a sequence, so it is numbered and ruled. */
+  .dt-hist{list-style:none;margin:2px 0 0;padding:0 0 0 15px;border-left:2px solid var(--line)}
+  .dt-hist li{position:relative;margin-bottom:9px;font-size:12.5px;color:#42506b}
+  .dt-hist li::before{content:"";position:absolute;left:-20px;top:6px;width:7px;height:7px;
+    border-radius:50%;background:#c3cbd9}
+  .dt-hist li:last-child::before{background:var(--ink)}
+  /* The date and its reason are two lines, both at normal weight: the entry is
+     read as one thing, and nothing inside it shouts over the rest. */
+  .dt-line{line-height:1.45;color:var(--ink)}
+  .dt-arr{padding:0 5px;color:var(--muted)}
+  .dt-reason{line-height:1.4;color:#42506b}
+  .dt-unset{color:var(--muted);font-style:italic}
+  .dt-warn{margin:0 0 9px;font-size:12px;color:#7a5a2b;background:#fdf7ec;
+    border:1px solid #ecdcc0;border-radius:8px;padding:7px 9px}
+  .dt-deps{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+  .dt-deps li{background:#eef2f8;color:#42506b;border-radius:7px;padding:4px 9px;
+    font-size:12px;font-weight:600;margin:0}
+
+  /* the chosen marker, in both views */
+  .milestone.sel .m-dot{box-shadow:0 0 0 3px var(--card),0 0 0 5px var(--ink)}
+  .milestone.sel .m-lbl{color:var(--ink);font-weight:700}
+  #donut .rk.sel{stroke:var(--ink);stroke-width:3}
+  #donut .rk:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
@@ -229,6 +296,7 @@
             <li><b>Timeline detail</b> — every milestone on a real calendar, one lane per system. Track width, month grid, dependency trace and the draggable current-date line live here.</li>
             <li><b>Cyclical overview</b> — the same records wrapped into a circle, to show what recurs rather than when exactly.</li>
             <li><b>Data table</b> — every underlying record in one list, for checking the data behind both visuals.</li>
+            <li><b>Milestone detail</b> — clicking a marker on either visual opens its date history and its dependencies, read from the change log alongside the milestone data.</li>
           </ul>
         </div>
         <div>
@@ -272,6 +340,7 @@
           <li><b>Window</b> sets the period, and the Cyclical tab follows it. Narrowing the window is what relieves crowding: at one year each month cell gets three times the width it has at three.</li>
           <li><b>Month grid</b> switches itself off when a month cell is too narrow to read as a guide; the hint next to it says how narrow.</li>
           <li>Small dots with no label are crowded milestones — hover for the name, or use <b>Show all labels</b>.</li>
+          <li><b>Click any marker</b> for its record: the date history, what it waits on, and what waits on it. It opens at the foot of the window, and a <b>Show detail</b> button appears on the marker itself, which puts the same content in a draggable panel beside the dot. Click the marker again, or press Escape, to close.</li>
           <li>The <b>date handle</b> above the lanes is draggable. Focus it and use ← → for a day, shift + ← → for a month, Home to return to today. It turns amber once moved, and a reload always restores today.</li>
           <!-- written by renderNowLine() in ui.js. Hidden by CSS while empty, so it
                cannot get stuck visible or stuck hidden if the two fall out of step. -->
@@ -324,6 +393,7 @@
         <ul>
           <li>Rings run outer to inner in the same order as the legend above; hover any marker for its system, name and month.</li>
           <li>Each slot is <b>one month of one year</b> — 12 slots at a 1-year window, 24 at 2 years, 36 at 3. Nothing is folded, so no slot is ambiguous.</li>
+          <li><b>Click any marker</b> for its date history and dependencies, at the foot of the window, or via <b>Show detail</b> on the marker for a panel beside the dot. The timeline and the ring open the same record.</li>
           <li>A ring with no markers says whether the system is awaiting data entirely, or simply has nothing inside this window.</li>
           <li><span id="ringNowLine"></span></li>
         </ul>
@@ -356,6 +426,16 @@
     </div>
   </div>
 </div>
+
+<!-- DETAIL PANEL — written by js/detail.js when a marker is clicked.
+     The dock is the docked-at-the-foot version; the float is the same content
+     in a draggable window, opened by the dock's "Show detail" button. Both
+     start empty and hidden; neither is drawn until there is a record. -->
+<div class="dt-dock" id="detailDock" role="region" aria-label="Milestone detail" hidden></div>
+<div class="dt-float" id="detailFloat" role="dialog" aria-label="Milestone detail" hidden></div>
+<!-- The second treatment: one offer, pinned to the marker that was clicked.
+     js/detail.js keeps it on the dot as the page scrolls and the views redraw. -->
+<button type="button" class="dt-chip" id="detailChip" hidden>Show detail</button>
 
 <!-- TOOLTIP -->
 <div class="tip" id="tip"></div>

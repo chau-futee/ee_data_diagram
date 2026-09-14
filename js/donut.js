@@ -24,6 +24,7 @@ import {
   spanMonths, degPerMonth, windowYears, windowLabel
 } from './config.js';
 import { showTip, hideTip } from './ui.js';
+import { openDetail } from './detail.js';
 
 export function drawDonut(events, all, win) {
   const svg = document.getElementById('donut');
@@ -97,12 +98,19 @@ export function drawDonut(events, all, win) {
     const rm = e.f * slots;                          // month position within the window
     const [x, y] = polar(cx, cy, r, rm * deg);
     const label = `${months[Math.floor(rm) % 12]} ${win.startYear + Math.floor(Math.floor(rm) / 12)}`;
+    /* data-k is the index into the event array, written so a click on the ring
+       opens the same record the timeline would. */
     s += `<circle class="rk" data-t="${esc(e.t)}" data-s="${esc(e.sys)}" data-when="${esc(label)}"`
+       + ` data-k="${e._k}" tabindex="0" role="button" aria-label="${esc(e.t)}, ${esc(label)}"`
        + ` cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="7" fill="${COL[e.sys]}" stroke="#fff"`
        + ` stroke-width="2" style="cursor:pointer"/>`;
   });
 
   svg.innerHTML = s;
+
+  /* byK, not the marker's index in the NodeList: the ring is redrawn from a
+     filtered array, so position in the list is not a record identity. */
+  const byK = new Map(events.map(e => [String(e._k), e]));
 
   svg.querySelectorAll('.rk').forEach(el => {
     const html = `<b>${esc(NAME[el.dataset.s])}</b>${el.dataset.t}`
@@ -111,5 +119,16 @@ export function drawDonut(events, all, win) {
     el.addEventListener('mouseleave', hideTip);
     el.addEventListener('mouseenter', () => el.setAttribute('r', '9'));
     el.addEventListener('mouseleave', () => el.setAttribute('r', '7'));
+    el.addEventListener('focus', () => {
+      const r = el.getBoundingClientRect();
+      showTip({ clientX: r.left + r.width / 2, clientY: r.bottom }, html);
+    });
+    el.addEventListener('blur', hideTip);
+    el.addEventListener('click', () => openDetail(byK.get(el.dataset.k)));
+    el.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter' || ev.key === ' ') {
+        ev.preventDefault(); openDetail(byK.get(el.dataset.k));
+      }
+    });
   });
 }

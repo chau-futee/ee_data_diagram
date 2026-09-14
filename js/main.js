@@ -14,7 +14,7 @@
    ============================================================================= */
 
 import {
-  DATA_URL, sysOrder, year, firstYear, lastYear,
+  DATA_URL, LOG_URL, sysOrder, year, firstYear, lastYear,
   absMonth, SPAN, absMonthIn, spanMonths, inWindow
 } from './config.js';
 import { drawLegend } from './legend.js';
@@ -22,6 +22,7 @@ import { drawDonut } from './donut.js';
 import { drawTimeline } from './timeline.js';
 import { drawTable } from './table.js';
 import { initUI, refreshChrome, win, onWindowChange } from './ui.js';
+import { initDetail, refreshSelection } from './detail.js';
 
 let ALL = [];        // every valid record, full range — the table reads this
 
@@ -91,9 +92,30 @@ function renderWindow() {
   drawDonut(shown, ALL, win);
   drawTimeline(shown, ALL, win);
   refreshChrome();
+  /* A redraw replaces every marker, so the selected one loses its class and
+     the open panel loses the element it points at. Re-mark it. */
+  refreshSelection();
 }
 
 /* ---- load ------------------------------------------------------------------ */
+
+/* The history is secondary: a page with milestones and no change log is still
+   useful, so a failure here is logged and the panel copes with an empty log
+   rather than the whole page going to the error box. */
+async function loadHistory() {
+  try {
+    const res = await fetch(LOG_URL, { cache: 'no-store' });
+    if (!res.ok) throw new Error(`${LOG_URL} returned ${res.status} ${res.statusText}`);
+    const doc = await res.json();
+    const changes = Array.isArray(doc) ? doc : doc.changes;
+    if (!Array.isArray(changes)) throw new Error(`${LOG_URL} has no "changes" array`);
+    return changes;
+  } catch (err) {
+    console.warn('[history] date history unavailable —', err.message);
+    return [];
+  }
+}
+
 async function loadEvents() {
   const res = await fetch(DATA_URL, { cache: 'no-store' });
   if (!res.ok) throw new Error(`${DATA_URL} returned ${res.status} ${res.statusText}`);
@@ -130,6 +152,10 @@ async function start() {
   try {
     const { events, meta } = await loadEvents();
     ALL = validate(events);
+
+    /* Before any view draws: initDetail() stamps every event with its stable
+       _k, and the two visuals write that into data-k as they render. */
+    initDetail(ALL, await loadHistory());
 
     initUI();
     onWindowChange(renderWindow);
