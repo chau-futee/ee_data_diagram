@@ -55,13 +55,17 @@ const key = (sys, title) =>
 const evKey = e => key(e.sys, e.t);
 
 /* ---- date formatting -------------------------------------------------------
-   Every newDate in the log ends "-01", so the log is month-precise and m/yyyy
-   is the honest format: printing a day would invent one. */
+   The log is not written to one precision: some entries carry a day
+   ("2026-03-31"), others stop at the month ("2026-07"). Every view in the app
+   places a record by month, so the panel prints the month and drops any day
+   rather than showing a precision it cannot show for every record. Same
+   "Mon YYYY" shape as monthLabel() in config.js, so the panel and the table
+   read alike. */
 
-function mYYYY(iso) {
+function monText(iso) {
   if (!iso) return '';
   const [y, m] = String(iso).split('-');
-  return `${+m}/${y}`;
+  return `${months[(+m - 1) % 12]} ${y}`;
 }
 
 /* the dot's own month, from events.json. monthOf() rounds, matching the rest of
@@ -116,10 +120,10 @@ function historyHTML(e) {
      real log lands, it belongs to the change rather than to the reader. */
   const rows = list.map(c => {
     const move = c.originalDate === null || c.originalDate === undefined
-      ? `Add event with deadline ${esc(mYYYY(c.newDate))}`
-      : `${esc(mYYYY(c.originalDate))}`
+      ? `Added: ${esc(monText(c.newDate))}`
+      : `${esc(monText(c.originalDate))}`
         + `<span class="dt-arr" aria-hidden="true">\u2192</span>`
-        + `${esc(mYYYY(c.newDate))}`;
+        + `${esc(monText(c.newDate))}`;
     const reason = c.reason
       ? `<div class="dt-reason">${esc(c.reason)}</div>`
       : '<div class="dt-reason dt-unset">Reason not recorded</div>';
@@ -143,31 +147,63 @@ function historyHTML(e) {
   return notes + `<ol class="dt-hist">${rows}</ol>`;
 }
 
+/* Plain stacked lines rather than pills. A dependency is a sentence fragment
+   the reader has to read, and several of them wrapped as chips read as tags —
+   as though the set were a category the milestone belongs to. */
 function depsHTML(list, emptyMsg) {
   if (!Array.isArray(list) || !list.length) return `<p class="dt-empty">${esc(emptyMsg)}</p>`;
   return `<ul class="dt-deps">${list.map(d => `<li>${esc(d)}</li>`).join('')}</ul>`;
 }
 
+/* All three columns now carry a line saying what they hold. Date history had
+   none, which left the reader to infer from the entries what the column was
+   counting. */
 function buildBody(e) {
   return '<div class="dt-cols">'
-    + `<section class="dt-col"><h4>Date history</h4>${historyHTML(e)}</section>`
+    + '<section class="dt-col"><h4>Date history</h4>'
+    + '<p class="dt-note">Changes recorded for this milestone</p>'
+    + historyHTML(e) + '</section>'
     + '<section class="dt-col"><h4>Upward dependencies</h4>'
-    + '<p class="dt-note">What this milestone waits on.</p>'
+    + '<p class="dt-note">What this milestone waits on</p>'
     + depsHTML(e.upDeps, 'None recorded.') + '</section>'
     + '<section class="dt-col"><h4>Downward dependencies</h4>'
-    + '<p class="dt-note">What waits on this milestone.</p>'
+    + '<p class="dt-note">What waits on this milestone</p>'
     + depsHTML(e.downDeps, 'None recorded.') + '</section>'
     + '</div>';
 }
 
+/* One labelled fact. An em dash where the field is empty, so a missing value
+   reads as missing rather than as a label with nothing after it. Every record
+   in events.json currently carries the literal string "TBD" in reviewedBy and
+   reviewedOn, so that is what the panel shows today. */
+function fact(label, value) {
+  return `<span class="dt-fact">${esc(label)} <b>${esc(value || '\u2014')}</b></span>`;
+}
+
+/* The header states the record in words: its title, then the four facts side
+   by side. The 12px swatch is gone — "System: eTRM" names the system, so the
+   colour is carried by the bar down the panel's left edge instead, set by
+   accent(). */
 function headHTML(e) {
   const { label } = eventMonth(e);
   return `<div class="dt-head">`
-    + `<i class="dt-swatch" style="background:${COL[e.sys]}" aria-hidden="true"></i>`
     + `<div class="dt-titles"><b>${esc(e.t)}</b>`
-    + `<span class="dt-meta">${esc(NAME[e.sys] || SHORT[e.sys] || e.sys)} \u00b7 ${esc(label)}</span></div>`
-    + `<button type="button" class="dt-x" data-act="close" aria-label="Close">\u00d7</button>`
+    + `<div class="dt-facts">`
+    + fact('System:', NAME[e.sys] || SHORT[e.sys] || e.sys)
+    + fact('Deadline:', label)
+    + fact('Reviewed by:', e.reviewedBy)
+    + fact('Reviewed date:', e.reviewedOn)
+    + `</div></div>`
+    + `<button type="button" class="dt-x" data-act="close">`
+    + `<span aria-hidden="true">\u00d7</span> Close</button>`
     + `</div>`;
+}
+
+/* The left bar is the only system colour left in the panel, and it is drawn by
+   the stylesheet, which cannot read COL. Hand it over as a custom property on
+   whichever container is about to be filled. */
+function accent(el, e) {
+  el.style.setProperty('--sys', COL[e.sys] || 'var(--line)');
 }
 
 /* ---- the dock -------------------------------------------------------------- */
@@ -175,6 +211,7 @@ function headHTML(e) {
 function renderDock() {
   if (!current) { closeDock(); return; }
   dock.innerHTML = headHTML(current) + buildBody(current);
+  accent(dock, current);
   dock.hidden = false;
   /* The timeline sizes its lanes against the free height of the window, so the
      dock has to declare how much of it it just took. */
@@ -197,6 +234,7 @@ let floatPos = null;
 function renderFloat() {
   if (!floatOpen || !current) { floater.hidden = true; return; }
   floater.innerHTML = headHTML(current) + buildBody(current);
+  accent(floater, current);
   floater.hidden = false;
   if (!floatPos) floatPos = anchorToMarker();
   placeFloat();
