@@ -5,6 +5,15 @@
    Reads the same event objects the timeline and ring read, so it cannot drift
    out of step with them.
 
+   EXPANDABLE ROWS. Each row carries a +/- button, and an open row is followed
+   by a second row holding the detail panel — the same head and body the dock
+   and the float show, built by detailPanelHTML() in detail.js. Nothing about
+   the panel is written twice: this file supplies a frame and nothing else.
+
+   The open set is keyed by e._k, the stable index initDetail() stamps on every
+   event before any view draws. It survives a filter change: a row filtered out
+   of view and then back comes back open, because the reader never closed it.
+
    Was: lines 603-684 of data_donut_concept_4_1.html.
    ============================================================================= */
 
@@ -12,14 +21,19 @@ import {
   sysOrder, COL, NAME, SHORT, months, year, SPAN,
   absMonth, monthLabel, esc
 } from './config.js';
+import { detailPanelHTML } from './detail.js';
 
 /* Sentinel for the "not set" option. Must survive being written into an HTML
    attribute — a U+0000 does not; the parser rewrites it and the option then
    matches nothing. */
 const NOTSET = '__notset__';
 
+/* Columns a row spans, for the empty state and the panel row. */
+const COLS = 5;
+
 export function drawTable(events) {
   const rows = [...events].sort((a, b) => absMonth(a) - absMonth(b));
+  const open = new Set();          // _k of every expanded row
 
   /* ---- filter controls ---- */
   const sysWithData = sysOrder.filter(s => events.some(e => e.sys === s));
@@ -51,9 +65,36 @@ export function drawTable(events) {
         fTo   = document.getElementById('fTo'),
         fText = document.getElementById('fText'),
         fFreq = document.getElementById('fFreq'),
-        fClear = document.getElementById('fClear');
+        fClear = document.getElementById('fClear'),
+        table  = document.getElementById('dataTable');
   fFrom.value = 0;
   fTo.value = SPAN - 1;
+
+  /* ---- one row, and the panel under it when it is open ----------------------
+     The button says what it will do, not what it is: a reader with a screen
+     reader hears "Show detail for ..." rather than "plus". */
+
+  function rowHTML(e) {
+    const k = e._k;
+    const isOpen = open.has(k);
+    const label = `${isOpen ? 'Hide' : 'Show'} detail for ${esc(e.t)}`;
+    const main = `<tr class="${isOpen ? 'open' : ''}" data-k="${k}">
+        <td class="exp"><button type="button" class="expbtn" data-act="toggle" data-k="${k}"
+          aria-expanded="${isOpen}" aria-label="${label}" title="${label}"
+          >${isOpen ? '\u2212' : '+'}</button></td>
+        <td class="sysc"><i class="sysdot" style="background:${COL[e.sys]}"></i>${esc(SHORT[e.sys])}</td>
+        <td>${esc(e.t)}</td>
+        <td class="dline">${monthLabel(absMonth(e))}</td>
+        <td class="num">${e.freq ? esc(e.freq) : ''}</td>
+      </tr>`;
+    if (!isOpen) return main;
+    /* --sys is read by .dt-inrow in the stylesheet, which cannot look COL up
+       itself. Same handover the dock and the float get from accent(). */
+    return main + `<tr class="detrow" data-k="${k}">
+        <td colspan="${COLS}"><div class="dt-inrow" style="--sys:${COL[e.sys]}"
+          >${detailPanelHTML(e)}</div></td>
+      </tr>`;
+  }
 
   function render() {
     const sys = fSys.value, from = +fFrom.value, to = +fTo.value, freq = fFreq.value;
@@ -67,21 +108,14 @@ export function drawTable(events) {
       return true;
     });
 
-    document.getElementById('dataTable').innerHTML =
+    table.innerHTML =
       `<thead><tr>
-         <th>System</th><th>Milestone</th><th>Month</th><th>Frequency</th>
-         <th>Reviewed by</th><th>Reviewed date</th>
+         <th class="exp"><span class="vh">Detail</span></th>
+         <th>System</th><th>Milestone</th><th>Deadline</th><th>Frequency</th>
        </tr></thead><tbody>${
         shown.length
-        ? shown.map(e => `<tr>
-            <td class="sysc"><i class="sysdot" style="background:${COL[e.sys]}"></i>${esc(SHORT[e.sys])}</td>
-            <td>${esc(e.t)}</td>
-            <td class="num">${monthLabel(absMonth(e))}</td>
-            <td class="num">${e.freq ? esc(e.freq) : ''}</td>
-            <td class="num">${e.reviewedBy ? esc(e.reviewedBy) : ''}</td>
-            <td class="num">${e.reviewedOn ? esc(e.reviewedOn) : ''}</td>
-            </tr>`).join('')
-        : `<tr><td colspan="7" class="empties">No milestones match these filters.</td></tr>`
+        ? shown.map(rowHTML).join('')
+        : `<tr><td colspan="${COLS}" class="empties">No milestones match these filters.</td></tr>`
       }</tbody>`;
 
     const filtered = shown.length !== rows.length;
@@ -99,6 +133,24 @@ export function drawTable(events) {
   fClear.addEventListener('click', () => {
     fSys.value = ''; fFrom.value = 0; fTo.value = SPAN - 1;
     fFreq.value = ''; fText.value = '';
+    render();
+  });
+
+  /* One listener on the table, not one per button: render() replaces the whole
+     body on every keystroke in the search box, and handlers bound to the old
+     buttons would go with it. drawTable() is called once, from main.js. */
+  table.addEventListener('click', ev => {
+    const b = ev.target.closest('button');
+    if (!b) return;
+    /* The panel's own close button is the dock's, markup and all. In this
+       container it means "collapse the row this panel belongs to". */
+    const k = b.dataset.act === 'toggle'
+      ? +b.dataset.k
+      : (b.dataset.act === 'close' && b.closest('tr.detrow')
+          ? +b.closest('tr.detrow').dataset.k
+          : null);
+    if (k === null || Number.isNaN(k)) return;
+    if (open.has(k)) open.delete(k); else open.add(k);
     render();
   });
 

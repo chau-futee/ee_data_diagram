@@ -31,7 +31,11 @@
    dateConflict() once the two sources are reconciled.
 
    Imports config only, so the graph stays acyclic:
-       config.js  <-  ui.js  <-  detail.js  <-  donut/timeline.js  <-  main.js
+       config.js  <-  ui.js  <-  detail.js  <-  donut/timeline/table.js  <-  main.js
+
+   THREE CONTAINERS NOW. The table draws the same panel inside an expanded
+   row, through detailPanelHTML() at the foot of this file. It is the same
+   head and the same body, so a change here reaches all three.
    ============================================================================= */
 
 import { COL, NAME, SHORT, months, monthOf, esc } from './config.js';
@@ -204,6 +208,13 @@ function headHTML(e) {
    whichever container is about to be filled. */
 function accent(el, e) {
   el.style.setProperty('--sys', COL[e.sys] || 'var(--line)');
+}
+
+/* The whole panel, for a container this file does not own. The table expands a
+   row and puts this inside it; the close button keeps its data-act="close", so
+   the table can catch it and collapse the row it belongs to. */
+export function detailPanelHTML(e) {
+  return headHTML(e) + buildBody(e);
 }
 
 /* ---- the dock -------------------------------------------------------------- */
