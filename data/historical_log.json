@@ -12,85 +12,145 @@
     ]
   },
   "changes": [
-    {
-      "system": "etrm",
-      "event": "PY2028 Measure package submissions",
-      "reference": "Placeholder reference 001",
-      "originalDate": null,
+      {
+      "sys": "etrm",
+      "event": "Measure Package Submissions",
+      "py": "2028",
+      "previousDate": null,
       "newDate": "2026-03-31",
       "reason": "Initial deadline from E-5350",
-      "reviewedBy": "TBD",
-      "reviewedDate": "TBD"
+      "reviewedBy": "",
+      "reviewedDate": ""
     },
     {
-      "system": "etrm",
-      "event": "PY2028 Measure package submissions",
-      "reference": "Placeholder reference 001",
-      "originalDate": "2026-03-31",
+      "sys": "etrm",
+      "event": "Measure Package Submissions",
+      "py": "2028",
+      "previousDate": "2026-03-31",
       "newDate": "2026-07-01",
       "reason": "Extension due to LS",
-      "reviewedBy": "TBD",
-      "reviewedDate": "TBD"
+      "reviewedBy": "",
+      "reviewedDate": ""
     },
     {
-      "system": "etrm",
-      "event": "PY2028 Measure package submissions",
-      "reference": "Placeholder reference 001",
-      "originalDate": "2026-07-01",
+      "sys": "etrm",
+      "event": "Measure Package Submissions",
+      "py": "2028",
+      "previousDate": "2026-07-01",
       "newDate": "2026-09-01",
       "reason": "Extension 2 due to LS",
-      "reviewedBy": "TBD",
-      "reviewedDate": "TBD"
+      "reviewedBy": "",
+      "reviewedDate": ""
     },
     {
-      "system": "acc",
-      "event": "Draft Resolution (with Draft Calculator) published",
-      "reference": "Placeholder reference 002",
-      "originalDate": null,
+      "sys": "acc",
+      "event": "Draft Resolution (with Draft Calculator) Published",
+      "py": "2028",
+      "previousDate": null,
       "newDate": "2026-07",
       "reason": "Adopted calendar",
-      "reviewedBy": "TBD",
-      "reviewedDate": "TBD"
+      "reviewedBy": "",
+      "reviewedDate": ""
     },
     {
-      "system": "acc",
+      "sys": "acc",
       "event": "Draft Resolution (with Draft Calculator) published",
-      "reference": "Placeholder reference 002",
-      "originalDate": "2026-07",
+      "py": "2028",
+      "previousDate": "2026-07",
       "newDate": "2026-09",
       "reason": "Delay",
-      "reviewedBy": "TBD",
-      "reviewedDate": "TBD"
+      "reviewedBy": "",
+      "reviewedDate": ""
     },
     {
-      "system": "cet",
-      "event": "2028 Biennial avoided cost update",
-      "reference": "Placeholder reference 002",
-      "originalDate": null,
+      "sys": "cet",
+      "event": "CET Biennial Avoided Cost Updates",
+      "py": "2028",
+      "previousDate": null,
       "newDate": "2026-06",
       "reason": "Annual planning",
-      "reviewedBy": "TBD",
-      "reviewedDate": "TBD"
+      "reviewedBy": "",
+      "reviewedDate": ""
     },
     {
-      "system": "cet",
-      "event": "2028 Biennial avoided cost update",
-      "reference": "Placeholder reference 002",
-      "originalDate": "2026-06",
+      "sys": "cet",
+      "event": "CET Biennial Avoided Cost Updates",
+      "py": "2028",
+      "previousDate": "2026-06",
       "newDate": "2026-07",
       "reason": "Updated to align with ACC calendar",
-      "reviewedBy": "TBD",
-      "reviewedDate": "TBD"
+      "reviewedBy": "",
+      "reviewedDate": ""
     },
     {
-      "system": "cet",
-      "event": "2028 Biennial avoided cost update",
-      "reference": "Placeholder reference 002",
-      "originalDate": "2026-07",
+      "sys": "cet",
+      "event": "CET Biennial Avoided Cost Updates",
+      "py": "2028",
+      "previousDate": "2026-07",
       "newDate": "2026-09",
       "reason": "Delayed due to ACC draft calc",
-      "reviewedBy": "TBD",
-      "reviewedDate": "TBD"
+      "reviewedBy": "",
+      "reviewedDate": ""
+    },
+    {
+      "sys": "deer",
+      "event": "DEER Scoping Comments",
+      "py": "2028",
+      "previousDate": null,
+      "newDate": "2026-05",
+      "reason": "Adopted calendar",
+      "reviewedBy": "",
+      "reviewedDate": ""
+    },
+    {
+      "sys": "deer",
+      "event": "DEER Scoping Comments",
+      "py": "2028",
+      "previousDate": "2026-05",
+      "newDate": "2026-06",
+      "reason": "2 weeks period after scoping document published on May 26",
+      "reviewedBy": "",
+      "reviewedDate": ""
+    },
+    {
+      "sys": "deer",
+      "event": "Draft DEER Resolution",
+      "py": "2028",
+      "previousDate": null,
+      "newDate": "2026-07",
+      "reason": "Adopted calendar",
+      "reviewedBy": "",
+      "reviewedDate": ""
+    },
+    {
+      "sys": "deer",
+      "event": "Draft DEER Resolution",
+      "py": "2028",
+      "previousDate": "2026-07",
+      "newDate": "2026-09",
+      "reason": "Delay",
+      "reviewedBy": "",
+      "reviewedDate": ""
+    },
+    {
+      "sys": "deer",
+      "event": "Draft DEER Resolution Comments",
+      "py": "2028",
+      "previousDate": null,
+      "newDate": "2026-08",
+      "reason": "Adopted calendar",
+      "reviewedBy": "",
+      "reviewedDate": ""
+    },
+    {
+      "sys": "deer",
+      "event": "Draft DEER Resolution Comments",
+      "py": "2028",
+      "previousDate": "2026-08",
+      "newDate": "2026-09",
+      "reason": "Delay since draft resolution wasn't unpublished until Sept 26",
+      "reviewedBy": "",
+      "reviewedDate": ""
     }
   ]
 }

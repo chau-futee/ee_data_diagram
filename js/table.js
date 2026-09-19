@@ -19,7 +19,7 @@
 
 import {
   sysOrder, COL, NAME, SHORT, months, year, SPAN,
-  absMonth, monthLabel, esc
+  absMonth, monthLabel, esc, eventName
 } from './config.js';
 import { detailPanelHTML } from './detail.js';
 
@@ -77,13 +77,14 @@ export function drawTable(events) {
   function rowHTML(e) {
     const k = e._k;
     const isOpen = open.has(k);
-    const label = `${isOpen ? 'Hide' : 'Show'} detail for ${esc(e.t)}`;
+    const name = eventName(e);
+    const label = `${isOpen ? 'Hide' : 'Show'} detail for ${esc(name)}`;
     const main = `<tr class="${isOpen ? 'open' : ''}" data-k="${k}">
         <td class="exp"><button type="button" class="expbtn" data-act="toggle" data-k="${k}"
           aria-expanded="${isOpen}" aria-label="${label}" title="${label}"
           >${isOpen ? '\u2212' : '+'}</button></td>
         <td class="sysc"><i class="sysdot" style="background:${COL[e.sys]}"></i>${esc(SHORT[e.sys])}</td>
-        <td>${esc(e.t)}</td>
+        <td>${esc(name)}</td>
         <td class="dline">${monthLabel(absMonth(e))}</td>
         <td class="num">${e.freq ? esc(e.freq) : ''}</td>
       </tr>`;
@@ -104,7 +105,9 @@ export function drawTable(events) {
       const mi = absMonth(e);
       if (mi < Math.min(from, to) || mi > Math.max(from, to)) return false;
       if (freq === NOTSET ? !!e.freq : (freq && e.freq !== freq)) return false;
-      if (q && !e.t.toLowerCase().includes(q)) return false;
+      /* Searches the DISPLAYED name, so typing "2028" finds every record whose
+         program year is 2028 as well as any title containing the digits. */
+      if (q && !eventName(e).toLowerCase().includes(q)) return false;
       return true;
     });
 

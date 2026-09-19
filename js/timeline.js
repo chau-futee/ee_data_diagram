@@ -13,7 +13,8 @@
 
 import {
   sysOrder, COL, NAME, SHORT, LBL_FS, months,
-  spanMonths, windowYears, windowLabel, absMonthIn, monthLabelIn, hasData, esc
+  spanMonths, windowYears, windowLabel, absMonthIn, monthLabelIn, hasData, esc,
+  eventName
 } from './config.js';
 import { showTip, hideTip } from './ui.js';
 import { openDetail } from './detail.js';
@@ -90,15 +91,23 @@ export function drawTimeline(events, all, win) {
       m.dataset.when = whenLabel(ev, win);
       m.style.left = (ev.f * 100) + '%';
       m.tabIndex = 0;
+      /* Both of these read fields the current events.json no longer carries.
+         `id` drove the dependency-trace highlight (chainIds in config.js) and
+         `s` decided whether a marker's label was painted or held back for the
+         reveal-all toggle — 21 of the 58 records in the previous file were s:0.
+         Neither field survives the new header set, so every marker now takes
+         the default: no chain id, and dataset.s "1", meaning every label is
+         painted. The two lines are kept rather than deleted so that reinstating
+         either column in the data is a data change and not a code change. */
       if (ev.id) m.dataset.id = ev.id;
-      m.dataset.s = (ev.s === 0 ? '0' : '1');
-      /* _k is assigned once by initDetail() and never changes, so a click
-         resolves to one record even where two share a system and a title. */
+      m.dataset.s = (ev.show === 0 ? '0' : '1');
+      /* _k is assigned once by initDetail() and never changes, so a click resolves to one record. */
       m.dataset.k = ev._k;
+      const name = eventName(ev);
       m.innerHTML = `<div class="m-dot" style="background:${COL[sys]}"></div>`
-                  + `<div class="m-lbl">${esc(ev.t)}</div>`;
+                  + `<div class="m-lbl">${esc(name)}</div>`;
 
-      const html = () => `<b>${esc(NAME[sys])}</b>${esc(ev.t)}`
+      const html = () => `<b>${esc(NAME[sys])}</b>${esc(name)}`
                        + `<br><span style="opacity:.7">${m.dataset.when}</span>`;
       m.addEventListener('mousemove', e => showTip(e, html()));
       m.addEventListener('mouseleave', hideTip);

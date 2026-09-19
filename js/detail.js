@@ -13,22 +13,32 @@
    buildBody() is written once and both call it, so a difference between them is
    always a difference of container, never of content.
 
-   THE JOIN. historical_log.json carries no event key — only `system` and
-   `event` (the title). So the join is (sys, title), case-folded and
-   whitespace-collapsed. That join is complete in the current data: every one of
-   the 58 events matches at least one of the 70 change records, and every record
-   matches an event. It is NOT unique, though: the PA lane repeats four titles
-   across two years ("Q1"-"Q4 claims submission", 2026 and 2027), so eight dots
-   share four chains. Per the decision on 2026-09-13 the full title-matched
-   chain is shown on each of them, and shareCount() puts a note in the panel
-   saying so rather than letting the reader assume the chain is theirs alone.
+   THE JOIN. historical_log.json still carries no event id, but it now carries
+   the same three fields events.json does — `sys`, `py` and `event` — so the
+   join is (sys, py, event), case-folded and whitespace-collapsed.
 
-   TWO DATES THAT DISAGREE. In 16 of the 58 records the last `newDate` in the
-   chain is not the month the dot is drawn at — the dot follows events.json, the
-   chain follows the log, and the placeholder log was not reconciled with the
-   dataset. Silently showing both invites the reader to trust whichever they
-   read second, so the panel names the disagreement where it occurs. Delete
-   dateConflict() once the two sources are reconciled.
+   Adding py to the key is what made the join UNIQUE. Under the old (sys, title)
+   key the PA lane repeated four titles across two years ("Q1"-"Q4 claims
+   submission", 2026 and 2027), so eight dots shared four chains and the panel
+   had to warn the reader about it. With the program year in the key, no two of
+   the 60 records collide. shareCount() and its note are kept below because the
+   guarantee is a property of the data rather than of the key, and a future
+   record could still repeat a (sys, py, event) triple.
+
+   The join is not complete in either direction, and is not expected to be: the
+   log is a record of the milestones that have MOVED, so most events have no
+   chain and say so. Both directions are reported to the console by initDetail()
+   so an unmatched log record is visible rather than silently dropped.
+
+   TWO DATES THAT DISAGREE. A record carries a month in events.json and its
+   chain carries one in the log, and nothing forces them to agree: the dot
+   follows the first, the chain the last `newDate` of the second. Under the
+   previous placeholder log they disagreed on 16 of 58 records. Under the
+   current files they do not disagree at all — 5 of the 60 records have a chain,
+   and every one of them ends at the month its dot is drawn at. Silently showing
+   both would invite the reader to trust whichever they read second, so
+   dateConflict() stays, and stays checked, against the day the two sources
+   drift apart again.
 
    Imports config only, so the graph stays acyclic:
        config.js  <-  ui.js  <-  detail.js  <-  donut/timeline/table.js  <-  main.js
@@ -38,14 +48,14 @@
    head and the same body, so a change here reaches all three.
    ============================================================================= */
 
-import { COL, NAME, SHORT, months, monthOf, esc } from './config.js';
+import { COL, NAME, SHORT, months, monthOf, esc, eventName } from './config.js';
 import { setExtraReserve } from './ui.js';
 
 /* ---- state ---------------------------------------------------------------- */
 
 let ALL = [];              // every validated event, in file order
-let LOG = new Map();       // "sys|title" -> [change, ...] in file order
-let TITLES = new Map();    // "sys|title" -> how many events carry it
+let LOG = new Map();       // "sys|py|event" -> [change, ...] in file order
+let TITLES = new Map();    // "sys|py|event" -> how many events carry it
 let current = null;        // the selected event object, or null
 let floatOpen = false;
 let dock, floater, chip;
@@ -53,18 +63,27 @@ let chipRAF = 0;
 
 /* ---- the join key ---------------------------------------------------------- */
 
-const key = (sys, title) =>
-  String(sys).trim().toLowerCase() + '|' + String(title).trim().replace(/\s+/g, ' ').toLowerCase();
+/* Each part is trimmed, inner whitespace collapsed and case folded, so
+   "Draft Resolution ... Published" and "... published" land on one key. py is
+   stringified because it is authored as a string ("2026") and a future export
+   could just as easily emit the number. */
+const part = v => String(v == null ? '' : v).trim().replace(/\s+/g, ' ').toLowerCase();
 
-const evKey = e => key(e.sys, e.t);
+const key = (sys, py, event) => `${part(sys)}|${part(py)}|${part(event)}`;
+
+const evKey = e => key(e.sys, e.py, e.event);
 
 /* ---- date formatting -------------------------------------------------------
-   The log is not written to one precision: some entries carry a day
-   ("2026-03-31"), others stop at the month ("2026-07"). Every view in the app
-   places a record by month, so the panel prints the month and drops any day
-   rather than showing a precision it cannot show for every record. Same
-   "Mon YYYY" shape as monthLabel() in config.js, so the panel and the table
-   read alike. */
+   previousDate and newDate are ISO, month precision or finer: "2026-07", or
+   "2026-03-31" where a day is known. Every view in the app places a record by
+   month, so the panel prints the month and drops any day rather than showing a
+   precision it cannot show for every record. Same "Mon YYYY" shape as
+   monthLabel() in config.js, so the panel and the table read alike.
+
+   This assumes a leading four-digit year, which is the agreed shape of the
+   file. A value that does not start with one — a bare "1-Mar", say — yields
+   "undefined 1" rather than an error, so it is visible in the panel rather than
+   silently absorbed. */
 
 function monText(iso) {
   if (!iso) return '';
@@ -73,7 +92,10 @@ function monText(iso) {
 }
 
 /* the dot's own month, from events.json. monthOf() rounds, matching the rest of
-   the app — pg "P&G draft results" is authored at m 12.8. */
+   the app. The previous file used fractional months to order events inside a
+   month (pg "P&G draft results" at m 12.8); every m in the current file is a
+   whole number, so the rounding is presently a no-op and is kept because the
+   fraction is still a legal way to author an ordering. */
 const eventMonth = e => {
   const m = monthOf(e);
   const y = e.y + Math.floor((m - 1) / 12);
@@ -83,19 +105,23 @@ const eventMonth = e => {
 /* ---- the data questions the panel asks -------------------------------------
 
    SHOW_DATA_NOTES gates the two amber notes the panel can raise about its own
-   data: that a title is shared by more than one milestone, and that the end of
-   a chain disagrees with the month the dot is drawn at. Both are true of the
-   placeholder log and both are noise until the real history arrives, so they
-   are off. Flip this to true once data/historical_log.json is real and the
-   panel starts policing it again. The checks below stay written down rather
-   than deleted precisely so that flip is one word.
+   data: that a name is shared by more than one milestone, and that the end of a
+   chain disagrees with the month the dot is drawn at. Both were true of the
+   placeholder log and both were noise, so they were switched off.
+
+   Neither is true of the current files: adding py to the key made the name
+   unique across all 60 records, and no chain ends anywhere but at its dot's
+   month. Flipping this to true would therefore change nothing on screen today
+   and would catch the first record that breaks either property. It is left off
+   rather than flipped because that is a decision about what the panel should
+   police, not a consequence of the header rename.
    ---------------------------------------------------------------------------- */
 const SHOW_DATA_NOTES = false;
 
 const changesFor = e => LOG.get(evKey(e)) || [];
 
-/* How many events carry this exact system+title. >1 means the chain below is
-   shared between them. */
+/* How many events carry this exact sys+py+event. >1 means the chain below is
+   shared between them. Every record in the current data answers 1. */
 const shareCount = e => TITLES.get(evKey(e)) || 1;
 
 /* Does the end of the chain agree with where the dot is drawn? */
@@ -123,9 +149,13 @@ function historyHTML(e) {
      deliberately not shown — it is a placeholder string today and, once the
      real log lands, it belongs to the change rather than to the reader. */
   const rows = list.map(c => {
-    const move = c.originalDate === null || c.originalDate === undefined
+    /* No previous date means this record is the milestone's first appearance
+       rather than a move. The field is authored both ways — null in the schema
+       note, "" in the file as exported — so the test is plain falsiness and
+       covers null, undefined and the empty string alike. */
+    const move = !c.previousDate
       ? `Added: ${esc(monText(c.newDate))}`
-      : `${esc(monText(c.originalDate))}`
+      : `${esc(monText(c.previousDate))}`
         + `<span class="dt-arr" aria-hidden="true">\u2192</span>`
         + `${esc(monText(c.newDate))}`;
     const reason = c.reason
@@ -137,8 +167,8 @@ function historyHTML(e) {
   let notes = '';
   if (SHOW_DATA_NOTES) {
     if (shareCount(e) > 1) {
-      notes += `<p class="dt-warn">This title is used by ${shareCount(e)} milestones in the `
-        + 'dataset. The log records only a system and a title, so the entries below cover '
+      notes += `<p class="dt-warn">This system, program year and title are shared by `
+        + `${shareCount(e)} milestones in the dataset, so the entries below cover `
         + 'all of them.</p>';
     }
     const clash = dateConflict(e);
@@ -177,9 +207,10 @@ function buildBody(e) {
 }
 
 /* One labelled fact. An em dash where the field is empty, so a missing value
-   reads as missing rather than as a label with nothing after it. Every record
-   in events.json currently carries the literal string "TBD" in reviewedBy and
-   reviewedOn, so that is what the panel shows today. */
+   reads as missing rather than as a label with nothing after it. reviewedBy and
+   reviewedDate are empty strings on every record in the current events.json —
+   the previous file carried the literal string "TBD", which the panel had no
+   choice but to print — so all 60 records now show the em dash. */
 function fact(label, value) {
   return `<span class="dt-fact">${esc(label)} <b>${esc(value || '\u2014')}</b></span>`;
 }
@@ -191,12 +222,12 @@ function fact(label, value) {
 function headHTML(e) {
   const { label } = eventMonth(e);
   return `<div class="dt-head">`
-    + `<div class="dt-titles"><b>${esc(e.t)}</b>`
+    + `<div class="dt-titles"><b>${esc(eventName(e))}</b>`
     + `<div class="dt-facts">`
     + fact('System:', NAME[e.sys] || SHORT[e.sys] || e.sys)
     + fact('Deadline:', label)
     + fact('Reviewed by:', e.reviewedBy)
-    + fact('Reviewed date:', e.reviewedOn)
+    + fact('Reviewed date:', e.reviewedDate)
     + `</div></div>`
     + `<button type="button" class="dt-x" data-act="close">`
     + `<span aria-hidden="true">\u00d7</span> Close</button>`
@@ -434,7 +465,7 @@ export function initDetail(events, log) {
 
   LOG = new Map();
   (log || []).forEach(c => {
-    const k = key(c.system, c.event);
+    const k = key(c.sys, c.py, c.event);
     if (!LOG.has(k)) LOG.set(k, []);
     LOG.get(k).push(c);
   });
@@ -449,7 +480,7 @@ export function initDetail(events, log) {
   }
   if (bare.length) {
     console.warn(`[history] ${bare.length} milestone(s) have no date history:\n  `
-      + bare.map(e => `${e.sys} "${e.t}"`).join('\n  '));
+      + bare.map(e => `${e.sys} "${eventName(e)}"`).join('\n  '));
   }
 
   dock = document.getElementById('detailDock');

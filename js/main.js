@@ -15,7 +15,7 @@
 
 import {
   DATA_URL, LOG_URL, sysOrder, year, firstYear, lastYear,
-  absMonth, SPAN, absMonthIn, spanMonths, inWindow
+  absMonth, SPAN, absMonthIn, spanMonths, inWindow, eventName
 } from './config.js';
 import { drawLegend } from './legend.js';
 import { drawDonut } from './donut.js';
@@ -60,7 +60,7 @@ function placeEvents(events, w) {
 function validate(events) {
   const kept = [], dropped = [];
   events.forEach((e, i) => {
-    const where = `events[${i}] "${e.t ?? '(no title)'}"`;
+    const where = `events[${i}] "${eventName(e) || '(no title)'}"`;
     if (!sysOrder.includes(e.sys)) {
       dropped.push(`${where}: sys "${e.sys}" is not in sysOrder`);
     } else if (typeof e.y !== 'number' || typeof e.m !== 'number') {

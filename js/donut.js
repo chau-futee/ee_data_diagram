@@ -21,7 +21,7 @@
 
 import {
   sysOrder, COL, NAME, SHORT, months, RING, polar, esc, hasData,
-  spanMonths, degPerMonth, windowYears, windowLabel
+  spanMonths, degPerMonth, windowYears, windowLabel, eventName
 } from './config.js';
 import { showTip, hideTip } from './ui.js';
 import { openDetail } from './detail.js';
@@ -90,18 +90,21 @@ export function drawDonut(events, all, win) {
      + ` fill="#8a94a8">hover a marker</text>`;
 
   /* --- markers ---
-     Titles are escaped on the way into the attributes: the workbook has titles
-     containing & (P&G, em&v), which broke the raw version. */
+     Names are escaped on the way into the attributes: the workbook has titles
+     containing & (P&G, em&v), which broke the raw version. data-t carries the
+     displayed name — eventName(), i.e. py + event — so the tooltip built from
+     it below reads the same as the timeline label and the table row. */
   events.forEach(e => {
     const i = sysOrder.indexOf(e.sys);
     const r = rOuter - i * band - band / 2;
     const rm = e.f * slots;                          // month position within the window
     const [x, y] = polar(cx, cy, r, rm * deg);
     const label = `${months[Math.floor(rm) % 12]} ${win.startYear + Math.floor(Math.floor(rm) / 12)}`;
+    const name = eventName(e);
     /* data-k is the index into the event array, written so a click on the ring
        opens the same record the timeline would. */
-    s += `<circle class="rk" data-t="${esc(e.t)}" data-s="${esc(e.sys)}" data-when="${esc(label)}"`
-       + ` data-k="${e._k}" tabindex="0" role="button" aria-label="${esc(e.t)}, ${esc(label)}"`
+    s += `<circle class="rk" data-t="${esc(name)}" data-s="${esc(e.sys)}" data-when="${esc(label)}"`
+       + ` data-k="${e._k}" tabindex="0" role="button" aria-label="${esc(name)}, ${esc(label)}"`
        + ` cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="7" fill="${COL[e.sys]}" stroke="#fff"`
        + ` stroke-width="2" style="cursor:pointer"/>`;
   });
