@@ -45,7 +45,7 @@
     {
       "sys": "acc",
       "event": "Draft Resolution (with Draft Calculator) Published",
-      "py": "2028",
+      "py": "2026",
       "previousDate": null,
       "newDate": "2026-07",
       "reason": "Adopted calendar",
@@ -55,7 +55,7 @@
     {
       "sys": "acc",
       "event": "Draft Resolution (with Draft Calculator) published",
-      "py": "2028",
+      "py": "2026",
       "previousDate": "2026-07",
       "newDate": "2026-09",
       "reason": "Delay",
@@ -63,7 +63,7 @@
       "reviewedDate": ""
     },
     {
-      "sys": "cet",
+      "sys": "cedars",
       "event": "CET Biennial Avoided Cost Updates",
       "py": "2028",
       "previousDate": null,
@@ -73,7 +73,7 @@
       "reviewedDate": ""
     },
     {
-      "sys": "cet",
+      "sys": "cedars",
       "event": "CET Biennial Avoided Cost Updates",
       "py": "2028",
       "previousDate": "2026-06",
@@ -83,7 +83,7 @@
       "reviewedDate": ""
     },
     {
-      "sys": "cet",
+      "sys": "cedars",
       "event": "CET Biennial Avoided Cost Updates",
       "py": "2028",
       "previousDate": "2026-07",

@@ -2,8 +2,8 @@
   "schema": 1,
   "meta": {
     "sourceOfRecord": "PENDING - to be the SharePoint workbook. See the ETL step.",
-    "extractedFrom": "data_donut_concept_4_1.html (const EVENTS)",
-    "extractedOn": "2026-09-10",
+    "extractedFrom": "Data Donut Events Spreadsheet",
+    "extractedOn": "2026-09-19",
     "generatedBy": "manual one-off extraction, not yet the ETL",
     "recordCount": 58,
     "window": {
@@ -30,8 +30,8 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["IEPR Electric Generation Price Model"],
+      "downDeps": ["Staff Proposal Published"],
       "show": 1
     },
     {
@@ -44,8 +44,8 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["IRP TPP Base Case Portfolio Adoption"],
+      "downDeps": ["Staff Proposal Workshop"],
       "show": 1
     },
     {
@@ -58,8 +58,8 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["Staff Proposal Published"],
+      "downDeps": ["Opening Comments Due"],
       "show": 0
     },
     {
@@ -72,8 +72,8 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["Staff Proposal Workshop"],
+      "downDeps": ["Reply Comments Due"],
       "show": 0
     },
     {
@@ -86,8 +86,8 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["Opening Comments Due"],
+      "downDeps": ["Evidentiary Hearing (Optional)", "Briefing (Optional)", "Proposed Decision Published"],
       "show": 0
     },
     {
@@ -100,8 +100,8 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["Reply Comments Due"],
+      "downDeps": ["Proposed Decision Published"],
       "show": 0
     },
     {
@@ -114,8 +114,8 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["Reply Comments Due"],
+      "downDeps": ["Proposed Decision Published"],
       "show": 0
     },
     {
@@ -128,8 +128,8 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["Evidentiary Hearing (Optional)", "Briefing (Optional)", "Reply Comments Due"],
+      "downDeps": ["Proposed Decision Adopted"],
       "show": 1
     },
     {
@@ -142,8 +142,8 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["Proposed Decision Published"],
+      "downDeps": ["Draft Resolution (with Draft Calculator) Published"],
       "show": 0
     },
     {
@@ -156,8 +156,8 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["Proposed Decision Adopted"],
+      "downDeps": ["Draft ACC Workshop"],
       "show": 1
     },
     {
@@ -170,8 +170,8 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["Draft Resolution (with Draft Calculator) Published"],
+      "downDeps": ["Resolution Adoption"],
       "show": 0
     },
     {
@@ -184,8 +184,8 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["Draft ACC Workshop"],
+      "downDeps": ["CET Biennial Avoided Cost Updates"],
       "show": 1
     },
     {
@@ -199,7 +199,7 @@
       "reviewedBy": "",
       "reviewedDate": "",
       "upDeps": [],
-      "downDeps": [],
+      "downDeps": ["Claims Data Spec Update"],
       "show": 1
     },
     {
@@ -212,8 +212,8 @@
       "freq": "Annual",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["Claims Spec Planning"],
+      "downDeps": ["Claims Spec UAT"],
       "show": 1
     },
     {
@@ -226,8 +226,8 @@
       "freq": "Annual",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["Claims Data Spec Update"],
+      "downDeps": ["Q1 Claims Submission", "Q2 Claims Submission", "Q3 Claims Submission", "Q4 Claims Submission"],
       "show": 0
     },
     {
@@ -241,7 +241,7 @@
       "reviewedBy": "",
       "reviewedDate": "",
       "upDeps": [],
-      "downDeps": [],
+      "downDeps": ["CET Data Spec Update"],
       "show": 1
     },
     {
@@ -255,7 +255,7 @@
       "reviewedBy": "",
       "reviewedDate": "",
       "upDeps": [],
-      "downDeps": [],
+      "downDeps": ["CET Data Spec Update"],
       "show": 1
     },
     {
@@ -268,8 +268,8 @@
       "freq": "Annual",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["CET Development Planning", "CET Planning"],
+      "downDeps": ["CET UAT"],
       "show": 1
     },
     {
@@ -282,8 +282,8 @@
       "freq": "Annual",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["CET Data Spec Update"],
+      "downDeps": ["CET UAT QC"],
       "show": 0
     },
     {
@@ -296,8 +296,8 @@
       "freq": "Annual",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["CET UAT"],
+      "downDeps": ["Deploy CET Web Development Changes"],
       "show": 0
     },
     {
@@ -310,8 +310,8 @@
       "freq": "Annual",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["CET UAT QC"],
+      "downDeps": ["Web Development CET Merge Request"],
       "show": 0
     },
     {
@@ -325,7 +325,7 @@
       "reviewedBy": "",
       "reviewedDate": "",
       "upDeps": [],
-      "downDeps": [],
+      "downDeps": ["CET Final Update"],
       "show": 0
     },
     {
@@ -338,8 +338,8 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["Resolution Adoption"],
+      "downDeps": ["CET Final Update"],
       "show": 1
     },
     {
@@ -352,8 +352,8 @@
       "freq": "Annual",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["Web Development CET Merge Request", "CET Biennial Avoided Cost Updates"],
+      "downDeps": ["2027 Annual CET Update", "2028 Annual CET Update", "Q1 Claims Submission", "Q2 Claims Submission", "Q3 Claims Submission", "Q4 Claims Submission"],
       "show": 1
     },
     {
@@ -534,7 +534,7 @@
       "freq": "Annual",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
+      "upDeps": ["CET Final Update"],
       "downDeps": [],
       "show": 1
     },
@@ -548,7 +548,7 @@
       "freq": "Annual",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
+      "upDeps": ["CET Final Update"],
       "downDeps": [],
       "show": 1
     },
@@ -590,7 +590,7 @@
       "freq": "Annual",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
+      "upDeps": ["CET Final Update"],
       "downDeps": [],
       "show": 1
     },
@@ -618,7 +618,7 @@
       "freq": "Annual",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
+      "upDeps": ["CET Final Update"],
       "downDeps": [],
       "show": 1
     },
@@ -632,7 +632,7 @@
       "freq": "Annual",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
+      "upDeps": ["CET Final Update"],
       "downDeps": [],
       "show": 1
     },
@@ -646,7 +646,7 @@
       "freq": "Annual",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
+      "upDeps": ["CET Final Update"],
       "downDeps": [],
       "show": 1
     },
@@ -689,7 +689,7 @@
       "reviewedBy": "",
       "reviewedDate": "",
       "upDeps": [],
-      "downDeps": [],
+      "downDeps": ["Measure Characterization"],
       "show": 1
     },
     {
@@ -702,8 +702,8 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["Study Launch Workshop & Work Plan"],
+      "downDeps": ["Scenarios"],
       "show": 0
     },
     {
@@ -716,8 +716,8 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["Measure Characterization"],
+      "downDeps": ["Draft Results"],
       "show": 0
     },
     {
@@ -730,8 +730,8 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["Scenarios"],
+      "downDeps": ["Draft Results Comment Period"],
       "show": 1
     },
     {
@@ -744,8 +744,8 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["Draft Results"],
+      "downDeps": ["Proposed Decision Mailed"],
       "show": 0
     },
     {
@@ -758,8 +758,8 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
-      "downDeps": [],
+      "upDeps": ["Draft Results Comment Period"],
+      "downDeps": ["Decision on Goals Adoption"],
       "show": 0
     },
     {
@@ -772,7 +772,7 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": [],
+      "upDeps": ["Proposed Decision Mailed"],
       "downDeps": [],
       "show": 1
     },
@@ -840,6 +840,188 @@
       "y": 2028,
       "m": 7,
       "freq": "Biennial",
+      "reviewedBy": "Draft Resolution E-5474",
+      "reviewedDate": "9/18/2026",
+      "upDeps": [],
+      "downDeps": [],
+      "show": 1
+    },
+    {
+      "sys": "cns",
+      "event": "Room AC",
+      "py": "",
+      "reference": "CFR",
+      "y": 2026,
+      "m": 5,
+      "freq": "",
+      "reviewedBy": "Draft Resolution E-5474",
+      "reviewedDate": "9/18/2026",
+      "upDeps": [],
+      "downDeps": [],
+      "show": 1
+    },
+    {
+      "sys": "cns",
+      "event": "Residential dishwashers",
+      "py": "",
+      "reference": "CFR",
+      "y": 2027,
+      "m": 4,
+      "freq": "",
+      "reviewedBy": "Draft Resolution E-5474",
+      "reviewedDate": "9/18/2026",
+      "upDeps": [],
+      "downDeps": [],
+      "show": 1
+    },
+    {
+      "sys": "cns",
+      "event": "Electric motors",
+      "py": "",
+      "reference": "CFR",
+      "y": 2027,
+      "m": 6,
+      "freq": "",
+      "reviewedBy": "Draft Resolution E-5474",
+      "reviewedDate": "9/18/2026",
+      "upDeps": [],
+      "downDeps": [],
+      "show": 1
+    },
+    {
+      "sys": "cns",
+      "event": "Conventional cooking products",
+      "py": "",
+      "reference": "CFR",
+      "y": 2028,
+      "m": 1,
+      "freq": "",
+      "reviewedBy": "Draft Resolution E-5474",
+      "reviewedDate": "9/18/2026",
+      "upDeps": [],
+      "downDeps": [],
+      "show": 1
+    },
+    {
+      "sys": "cns",
+      "event": "Clothes dryers",
+      "py": "",
+      "reference": "CFR",
+      "y": 2028,
+      "m": 3,
+      "freq": "",
+      "reviewedBy": "Draft Resolution E-5474",
+      "reviewedDate": "9/18/2026",
+      "upDeps": [],
+      "downDeps": [],
+      "show": 1
+    },
+    {
+      "sys": "cns",
+      "event": "Clothes washers",
+      "py": "",
+      "reference": "CFR",
+      "y": 2028,
+      "m": 3,
+      "freq": "",
+      "reviewedBy": "Draft Resolution E-5474",
+      "reviewedDate": "9/18/2026",
+      "upDeps": [],
+      "downDeps": [],
+      "show": 1
+    },
+    {
+      "sys": "cns",
+      "event": "Circulator pumps",
+      "py": "",
+      "reference": "CFR",
+      "y": 2028,
+      "m": 5,
+      "freq": "",
+      "reviewedBy": "Draft Resolution E-5474",
+      "reviewedDate": "9/18/2026",
+      "upDeps": [],
+      "downDeps": [],
+      "show": 1
+    },
+    {
+      "sys": "cns",
+      "event": "Consumer furnaces",
+      "py": "",
+      "reference": "CFR",
+      "y": 2028,
+      "m": 12,
+      "freq": "",
+      "reviewedBy": "Draft Resolution E-5474",
+      "reviewedDate": "9/18/2026",
+      "upDeps": [],
+      "downDeps": [],
+      "show": 1
+    },
+    {
+      "sys": "cns",
+      "event": "Consumer storage-type water heaters",
+      "py": "",
+      "reference": "CFR",
+      "y": 2029,
+      "m": 5,
+      "freq": "",
+      "reviewedBy": "Draft Resolution E-5474",
+      "reviewedDate": "9/18/2026",
+      "upDeps": [],
+      "downDeps": [],
+      "show": 1
+    },
+    {
+      "sys": "cns",
+      "event": "Consumer refrigerators, refrigerator-freezers, and freezers",
+      "py": "",
+      "reference": "CFR",
+      "y": 2029,
+      "m": 1,
+      "freq": "",
+      "reviewedBy": "Draft Resolution E-5474",
+      "reviewedDate": "9/18/2026",
+      "upDeps": [],
+      "downDeps": [],
+      "show": 1
+    },
+    {
+      "sys": "cns",
+      "event": "Miscellaneous refrigeration products",
+      "py": "",
+      "reference": "CFR",
+      "y": 2029,
+      "m": 1,
+      "freq": "",
+      "reviewedBy": "Draft Resolution E-5474",
+      "reviewedDate": "9/18/2026",
+      "upDeps": [],
+      "downDeps": [],
+      "show": 1
+    },
+    {
+      "sys": "cns",
+      "event": "Air-cooled commercial package AC and HP >= 65 kBtu/h",
+      "py": "",
+      "reference": "CFR",
+      "y": 2029,
+      "m": 1,
+      "freq": "",
+      "reviewedBy": "Draft Resolution E-5474",
+      "reviewedDate": "9/18/2026",
+      "upDeps": [],
+      "downDeps": [],
+      "show": 1
+    },
+    {
+      "sys": "cns",
+      "event": "Distribution transformers",
+      "py": "",
+      "reference": "CFR",
+      "y": 2029,
+      "m": 4,
+      "freq": "",
       "reviewedBy": "Draft Resolution E-5474",
       "reviewedDate": "9/18/2026",
       "upDeps": [],
