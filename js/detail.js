@@ -49,7 +49,7 @@
    ============================================================================= */
 
 import { COL, NAME, SHORT, months, monthOf, esc, eventName } from './config.js';
-import { setExtraReserve } from './ui.js';
+import { setExtraReserve, onViewChange } from './ui.js';
 
 /* ---- state ---------------------------------------------------------------- */
 
@@ -60,6 +60,61 @@ let current = null;        // the selected event object, or null
 let floatOpen = false;
 let dock, floater, chip;
 let chipRAF = 0;
+
+/* ---- panel sections ----------------------------------------------------------
+   A slot other files fill. The panel opens on the timeline, on the ring and
+   inside an expanded table row, and some things a reader can do with a record
+   only make sense in one of those — tracing dependencies needs a linear axis
+   and a lane, so it belongs to the timeline alone.
+
+   Rather than teach this file what those things are, each contributor answers
+   for itself and renders its own markup:
+
+     id          stable, used to route clicks back
+     isAvailable (event) -> boolean, asked on every render
+     headHTML    (event) -> the controls that sit beside Close
+     bodyHTML    (event) -> an optional line under the header, for anything the
+                            contributor has to SAY rather than offer
+     onClick     (button, event) -> boolean; true means it handled the click
+
+   chainview.js registers the only section today. Nothing here knows what a
+   dependency is, and nothing there knows how this panel is assembled.
+   ---------------------------------------------------------------------------- */
+
+const SECTIONS = [];
+
+export function registerPanelSection(sec) {
+  if (sec && sec.id) SECTIONS.push(sec);
+}
+
+function liveSections(e) {
+  return SECTIONS.filter(s => {
+    try { return s.isAvailable ? s.isAvailable(e) : true; } catch (_) { return false; }
+  });
+}
+
+const sectionsHead = e => liveSections(e)
+  .map(s => (s.headHTML ? s.headHTML(e) : '')).join('');
+
+const sectionsBody = e => liveSections(e)
+  .map(s => (s.bodyHTML ? s.bodyHTML(e) : '')).filter(Boolean).join('');
+
+/* A section's own state changes its controls — "Trace" becomes "Hide", a depth
+   choice appears — and a tab change can retire it entirely, so both containers
+   re-render on request. Exported for the section's owner to call after it acts. */
+export function refreshPanel() {
+  if (!current) return;
+  renderDock();
+  renderFloat();
+}
+
+/* Clicks the panel does not recognise are offered to each live section in turn,
+   which is what lets a section own its own buttons without this file learning
+   what they do. */
+function routeClick(btn) {
+  if (!current) return;
+  liveSections(current).some(s => s.onClick && s.onClick(btn, current) === true);
+}
 
 /* ---- the join key ---------------------------------------------------------- */
 
@@ -229,8 +284,9 @@ function headHTML(e) {
     + fact('Reviewed by:', e.reviewedBy)
     + fact('Reviewed date:', e.reviewedDate)
     + `</div></div>`
+    + `<div class="dt-actions">${sectionsHead(e)}`
     + `<button type="button" class="dt-x" data-act="close">`
-    + `<span aria-hidden="true">\u00d7</span> Close</button>`
+    + `<span aria-hidden="true">\u00d7</span> Close</button></div>`
     + `</div>`;
 }
 
@@ -245,14 +301,14 @@ function accent(el, e) {
    row and puts this inside it; the close button keeps its data-act="close", so
    the table can catch it and collapse the row it belongs to. */
 export function detailPanelHTML(e) {
-  return headHTML(e) + buildBody(e);
+  return headHTML(e) + sectionsBody(e) + buildBody(e);
 }
 
 /* ---- the dock -------------------------------------------------------------- */
 
 function renderDock() {
   if (!current) { closeDock(); return; }
-  dock.innerHTML = headHTML(current) + buildBody(current);
+  dock.innerHTML = headHTML(current) + sectionsBody(current) + buildBody(current);
   accent(dock, current);
   dock.hidden = false;
   /* The timeline sizes its lanes against the free height of the window, so the
@@ -275,7 +331,7 @@ let floatPos = null;
 
 function renderFloat() {
   if (!floatOpen || !current) { floater.hidden = true; return; }
-  floater.innerHTML = headHTML(current) + buildBody(current);
+  floater.innerHTML = headHTML(current) + sectionsBody(current) + buildBody(current);
   accent(floater, current);
   floater.hidden = false;
   if (!floatPos) floatPos = anchorToMarker();
@@ -489,8 +545,13 @@ export function initDetail(events, log) {
 
   dock.addEventListener('click', ev => {
     const b = ev.target.closest('button');
-    if (b && b.dataset.act === 'close') closeDetail();
+    if (!b) return;
+    if (b.dataset.act === 'close') closeDetail(); else routeClick(b);
   });
+
+  /* A section can stop applying when the reader changes tab — the dependency
+     controls are timeline-only — so the open panel re-renders on a switch. */
+  onViewChange(() => refreshPanel());
   chip.addEventListener('click', () => {
     floatOpen = true;
     floatPos = null;          // re-anchor to whichever dot the chip is on now
@@ -498,7 +559,9 @@ export function initDetail(events, log) {
   });
   floater.addEventListener('click', ev => {
     const b = ev.target.closest('button');
-    if (b && b.dataset.act === 'close') { floatOpen = false; floater.hidden = true; }
+    if (!b) return;
+    if (b.dataset.act === 'close') { floatOpen = false; floater.hidden = true; }
+    else routeClick(b);
   });
   bindFloatDrag();
   addEventListener('keydown', ev => { if (ev.key === 'Escape') closeDetail(); });

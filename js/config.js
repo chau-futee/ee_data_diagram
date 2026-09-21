@@ -117,10 +117,16 @@ export const LANE_MAX  = 190;
 export const RESERVE   = 112;              // chain button + scrollbar + page padding
 
 /* ---- dependency chain ------------------------------------------------------
-   TODO: hardcoded. The workbook already carries `downward dependencies` and
-   `upward dependencies` on 64 of 71 rows, unused today.
+   `chainIds` used to live here: two hardcoded record ids, matched against an
+   `id` field that the current events.json does not carry, which is why the old
+   trace button dimmed every marker and lit none of them.
+
+   The chain is now derived from the upDeps and downDeps the data actually
+   carries. Its two decisions — how a dep string resolves to a record, and
+   whether an edge recorded on one side counts — are DEP_MATCH and EDGE_SOURCE
+   at the top of chain.js. They are not here because they are decisions about
+   what the dependency data means, not values several files share.
    ---------------------------------------------------------------------------- */
-export const chainIds = new Set(['app', 'pgdraft']);
 
 /* view id -> tab button id. Add a view by adding one entry. */
 export const VIEWS = { home: 'btnHome', time: 'btnTime', ring: 'btnRing', table: 'btnTable' };
@@ -160,6 +166,16 @@ export const monthOf = e => Math.round(e.m);
 /* full-range month index: Jan 2026 = 0, Dec 2028 = 35. Used by the table. */
 export const absMonth = e => (e.y - firstYear) * 12 + monthOf(e) - 1;
 export const monthLabel = mi => `${months[mi % 12]} ${firstYear + Math.floor(mi / 12)}`;
+
+/* A record's own month, as words. The detail panel and the chain both name the
+   month a dot is drawn at, and an off-window chain member has no window-relative
+   index to print — so the label is derived from the record itself, not from a
+   position. Same "Mon YYYY" shape as monthLabel() above. */
+export const monthYearLabel = e => {
+  const m = monthOf(e);
+  const y = e.y + Math.floor((m - 1) / 12);
+  return `${months[(m - 1 + 1200) % 12]} ${y}`;
+};
 
 /* window-relative month index: 0 is January of the window's first year */
 export const absMonthIn = (e, win) => (e.y - win.startYear) * 12 + monthOf(e) - 1;

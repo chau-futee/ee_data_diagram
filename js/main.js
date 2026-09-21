@@ -23,6 +23,8 @@ import { drawTimeline } from './timeline.js';
 import { drawTable } from './table.js';
 import { initUI, refreshChrome, win, onWindowChange } from './ui.js';
 import { initDetail, refreshSelection } from './detail.js';
+import { initChain } from './chain.js';
+import { initChainView, refreshChain } from './chainview.js';
 
 let ALL = [];        // every valid record, full range — the table reads this
 
@@ -95,6 +97,10 @@ function renderWindow() {
   /* A redraw replaces every marker, so the selected one loses its class and
      the open panel loses the element it points at. Re-mark it. */
   refreshSelection();
+  /* Same reason, for the chain: the graph has not changed, but every marker it
+     was drawn against has. Records that have just left the window become stubs
+     to the lane edge, and records that have just entered it get their dot back. */
+  refreshChain();
 }
 
 /* ---- load ------------------------------------------------------------------ */
@@ -157,7 +163,19 @@ async function start() {
        _k, and the two visuals write that into data-k as they render. */
     initDetail(ALL, await loadHistory());
 
+    /* The dependency graph is built once, from the full range rather than the
+       window, because a chain routinely reaches a record the window does not
+       draw. The returned counts go to the console so a data change that breaks
+       an assumption — a dep naming nothing, a title matching several records —
+       is visible on load rather than when someone happens to click that dot. */
+    const graph = initChain(ALL);
+    console.info('[chain]', graph);
+    if (graph.unresolved) {
+      console.warn(`[chain] ${graph.unresolved} dependency value(s) match no milestone.`);
+    }
+
     initUI();
+    initChainView();
     onWindowChange(renderWindow);
 
     drawTable(ALL);        // full range, drawn once

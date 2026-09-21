@@ -59,6 +59,10 @@ export function drawTimeline(events, all, win) {
   sysOrder.forEach(sys => {
     const row = document.createElement('div');
     row.className = 'lanerow';
+    /* Named, not counted. chainview.js has to find a lane by system to end a
+       stub in it when a chain member falls outside the window, and finding it
+       by index would silently follow sysOrder out of step with the DOM. */
+    row.dataset.sys = sys;
 
     const cell = document.createElement('div');
     cell.className = 'lanecell';
@@ -91,14 +95,10 @@ export function drawTimeline(events, all, win) {
       m.dataset.when = whenLabel(ev, win);
       m.style.left = (ev.f * 100) + '%';
       m.tabIndex = 0;
-      /* Both of these read fields the current events.json no longer carries.
-         `id` drove the dependency-trace highlight (chainIds in config.js) and
-         `s` decided whether a marker's label was painted or held back for the
-         reveal-all toggle — 21 of the 58 records in the previous file were s:0.
-         Neither field survives the new header set, so every marker now takes
-         the default: no chain id, and dataset.s "1", meaning every label is
-         painted. The two lines are kept rather than deleted so that reinstating
-         either column in the data is a data change and not a code change. */
+      /* `id` is a leftover from the hardcoded trace and drives nothing now —
+         the dependency chain is derived from upDeps/downDeps and finds its
+         markers by data-k. The line is kept so a record that does carry an id
+         still surfaces it in the DOM. */
       if (ev.id) m.dataset.id = ev.id;
       m.dataset.s = (ev.show === 0 ? '0' : '1');
       /* _k is assigned once by initDetail() and never changes, so a click resolves to one record. */

@@ -12,7 +12,7 @@
    ============================================================================= */
 
 import {
-  months, RING, NOW_COL, chainIds, VIEWS,
+  months, RING, NOW_COL, VIEWS,
   NUDGE_OVERLAP, MIN_CELL, MIN_GAP, LABEL_W, PAD, LANE_MAX, RESERVE, polar,
   WINDOW_SPANS, DEFAULT_WINDOW_YEARS, defaultStartYear, clampWindow,
   spanMonths, windowLabel, degPerMonth, firstYear, lastYear
@@ -103,12 +103,22 @@ export function hideTip() { tip().style.opacity = 0; }
 
 /* ============================================================ view switch == */
 
+/* Some chrome is view-specific — the dependency chain only applies to the
+   timeline, so the record panel's offer to trace one has to appear and
+   disappear with the tab. Rather than have those files poll for the active
+   view, the switch announces itself here, the same way the window does. */
+const viewListeners = [];
+export const onViewChange = fn => viewListeners.push(fn);
+export let currentView = 'home';
+
 export function show(v) {
   Object.entries(VIEWS).forEach(([view, btn]) => {
     document.getElementById(view).classList.toggle('active', view === v);
     document.getElementById(btn).classList.toggle('active', view === v);
   });
+  currentView = v;
   layoutAll();
+  viewListeners.forEach(fn => fn(v));
 }
 
 /* ===================================================== overlap avoidance ==
@@ -248,27 +258,15 @@ function updateGrid() {
     : '';
 }
 
-/* -------------------------------------------------------- chain highlight -- */
+/* -------------------------------------------------------- chain highlight --
+   applyChain() and toggleChain() used to live here. They matched every marker
+   against two hardcoded ids in a field the data no longer carries, so the
+   button dimmed all 59 markers and lit none.
 
-let chainOn = false;
-
-export function applyChain() {
-  document.getElementById('chainBtn').classList.toggle('on', chainOn);
-  document.querySelectorAll('.milestone').forEach(m => {
-    /* !! matters. dataset.id is undefined on most markers, so `chainOn &&
-       inChain` yields undefined rather than false — and classList.toggle()
-       treats an undefined second argument as "no force given", flipping the
-       class unconditionally. Every dot glowed. */
-    const inChain = !!(m.dataset.id && chainIds.has(m.dataset.id));
-    m.classList.toggle('dim', chainOn && !inChain);
-    m.querySelector('.m-dot').classList.toggle('glow', chainOn && inChain);
-  });
-}
-
-function toggleChain() {
-  chainOn = !chainOn;
-  applyChain();
-}
+   The chain is now derived from upDeps/downDeps (chain.js) and drawn over the
+   lanes (chainview.js), which owns its own marker classes. This file keeps the
+   .dim and .glow classes in play only through the stylesheet — it no longer
+   decides who wears them. */
 
 /* ====================================================== current-date line ==
    A day-precise "you are here" marker on both views.
@@ -457,8 +455,6 @@ export function initUI() {
 
   initWindowControls();
 
-  document.getElementById('chainBtn').addEventListener('click', toggleChain);
-
   document.getElementById('gridBtn')
     .addEventListener('click', () => { gridWanted = !gridWanted; updateGrid(); });
 
@@ -477,10 +473,11 @@ export function initUI() {
   });
 }
 
-/* Re-attach everything that a redraw wipes out of #lanes and #donut. */
+/* Re-attach everything that a redraw wipes out of #lanes and #donut. The chain
+   overlay is NOT reattached here: it belongs to chainview.js, and main.js calls
+   that file directly, so ui.js does not have to import a view. */
 export function refreshChrome() {
   buildGrid();
   mountNowLine();
-  applyChain();
   layoutAll();
 }
