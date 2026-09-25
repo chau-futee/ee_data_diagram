@@ -49,6 +49,63 @@ export const SHORT = {                     // acronym — lane box and table
    and clears it at the default 12.5px, so it takes no override. */
 export const LBL_FS = { pa: '11px' };
 
+/* ---- source-system links ----------------------------------------------------
+   Where a reader goes to see the system itself, rather than this page's record
+   of it. Two independent lookups with no precedence between them:
+
+     sysLink(sys)             the lane button, and the panel's System field
+     typeLink(sys, eventType) the panel's Type field
+
+   A field with no URL is drawn as plain text, so every entry below may be left
+   empty and nothing breaks. An empty string and an absent key behave
+   identically; blanks are listed only so the shape of what can be filled in is
+   visible without reading events.json.
+
+   TYPES ARE KEYED UNDER THEIR SYSTEM, never globally. "Claims" is an event type
+   of both cedars and pa, and "Measure Packages" of both etrm and pa, so one
+   flat table of type names would send two different systems to one page.
+
+   The type key must match events.json exactly, spacing and capitals included —
+   the lookup is a plain property read, not a fuzzy match. The pairs below are
+   every combination present in the current file. `pg` carries an empty
+   eventType on all of its records, so it can only ever take a system link.
+
+   Adding a link is a data edit, not a code edit: paste a URL in and the anchor
+   appears everywhere that system or type is named.
+   ---------------------------------------------------------------------------- */
+export const LINK = {
+  cedars: { url: 'https://cedars.cpuc.ca.gov/', types: { 'CET': '', 'Claims': '' } },
+  acc:    { url: 'https://www.ethree.com/public_proceedings/energy-efficiency-calculator/', types: { 'Avoided Cost': '' } },
+  pa:     { url: '', types: {
+              'Biennial Budget Advice Letter': 'https://cedars.cpuc.ca.gov/reports/record-level/all/',
+              'Claims': 'https://cedars.cpuc.ca.gov/reports/record-level/all/',
+              'Measure Packages': '',
+              'Mid-cycle Advice Letter': 'https://cedars.cpuc.ca.gov/reports/record-level/all/',
+              'Multi-Year Budget': 'https://cedars.cpuc.ca.gov/reports/record-level/all/' }
+            },
+  pg:     { url: 'https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/demand-side-management/energy-efficiency/energy-efficiency-potential-and-goals-studies/2025-potential-and-goals-study' },
+  etrm:   { url: 'https://www.caetrm.com/dashboard/', types: { 'Measure Packages': '' } },
+  deer:   { url: 'https://cedars.cpuc.ca.gov/deer-resources/deer-versions/', types: { 'DEER Resolution': '' } },
+  cns:    { url: '', types: { 'CFR': 'https://www.ecfr.gov/',
+                        'CA Title 24': 'https://www.energy.ca.gov/programs-and-topics/programs/building-energy-efficiency-standards' }
+          },
+  regulatory: { url: '', types: { 'CEC': '' } }
+};
+
+const linkText = v => (typeof v === 'string' ? v.trim() : '');
+
+export function sysLink(sys) {
+  const entry = LINK[sys];
+  return entry && linkText(entry.url) ? linkText(entry.url) : null;
+}
+
+export function typeLink(sys, eventType) {
+  const entry = LINK[sys];
+  const type = linkText(eventType);
+  if (!entry || !entry.types || !type) return null;
+  return linkText(entry.types[type]) || null;
+}
+
 /* ---- the full range the data may cover -------------------------------------
    The RANGE and the WINDOW are different things. This array is the outer limit
    of what may be authored and navigated to; the window is the 1-3 year slice of

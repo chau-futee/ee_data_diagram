@@ -14,7 +14,7 @@
 import {
   sysOrder, COL, NAME, SHORT, LBL_FS, months,
   spanMonths, windowYears, windowLabel, absMonthIn, monthLabelIn, hasData, esc,
-  eventName
+  eventName, sysLink
 } from './config.js';
 import { showTip, hideTip } from './ui.js';
 import { openDetail } from './detail.js';
@@ -67,8 +67,22 @@ export function drawTimeline(events, all, win) {
     const cell = document.createElement('div');
     cell.className = 'lanecell';
 
-    const lbl = document.createElement('div');
+    /* An anchor where the system has a home to link to, a plain div where it
+       does not. Same class either way, so a linked lane and an unlinked one are
+       the same box in the same colour — only the affordances differ. The label
+       carries no click handler of its own, so there is nothing for the link to
+       compete with. */
+    const url = sysLink(sys);
+    const lbl = document.createElement(url ? 'a' : 'div');
     lbl.className = 'lanelabel';
+    if (url) {
+      const label = `${NAME[sys]} \u2014 open the source system in a new tab`;
+      lbl.href = url;
+      lbl.target = '_blank';
+      lbl.rel = 'noopener noreferrer';   // the new tab cannot reach back here
+      lbl.title = label;
+      lbl.setAttribute('aria-label', label);
+    }
     lbl.style.background = COL[sys];
     lbl.textContent = SHORT[sys];
     if (LBL_FS[sys]) lbl.style.fontSize = LBL_FS[sys];
