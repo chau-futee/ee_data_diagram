@@ -6,12 +6,16 @@
      2. upward dependencies     (events.json -> upDeps)
      3. downward dependencies   (events.json -> downDeps)
 
-   TWO PRESENTATIONS OF THE SAME CONTENT, deliberately, so they can be compared
-   before one is kept:
-     - the DOCK, a panel across the bottom of the window; and
-     - the FLOAT, a draggable panel opened from the dock's "Show detail" button.
-   buildBody() is written once and both call it, so a difference between them is
-   always a difference of container, never of content.
+   ONE PRESENTATION, at the foot of the window. The DOCK is a panel across the
+   bottom, opened by clicking a marker on the timeline or the ring and closed by
+   its own Close button or Escape.
+
+   The draggable FLOAT, and the "Show detail" chip pinned to the marker that
+   opened it, are gone. They were the second of two treatments carried side by
+   side so they could be compared; the dock was kept. Nothing about the content
+   changed with them — buildBody() and headHTML() were always shared, so the
+   float showed the same record in a different frame and removing it removed a
+   frame and nothing else.
 
    THE JOIN. historical_log.json still carries no event id, but it now carries
    the same three fields events.json does — `sys`, `py` and `event` — so the
@@ -43,9 +47,9 @@
    Imports config only, so the graph stays acyclic:
        config.js  <-  ui.js  <-  detail.js  <-  donut/timeline/table.js  <-  main.js
 
-   THREE CONTAINERS NOW. The table draws the same panel inside an expanded
-   row, through detailPanelHTML() at the foot of this file. It is the same
-   head and the same body, so a change here reaches all three.
+   TWO CONTAINERS. The table draws the same panel inside an expanded row,
+   through detailPanelHTML() below. It is the same head and the same body, so a
+   change here reaches both.
    ============================================================================= */
 
 import {
@@ -59,9 +63,7 @@ let ALL = [];              // every validated event, in file order
 let LOG = new Map();       // "sys|py|event" -> [change, ...] in file order
 let TITLES = new Map();    // "sys|py|event" -> how many events carry it
 let current = null;        // the selected event object, or null
-let floatOpen = false;
-let dock, floater, chip;
-let chipRAF = 0;
+let dock;
 
 /* ---- panel sections ----------------------------------------------------------
    A slot other files fill. The panel opens on the timeline, on the ring and
@@ -102,12 +104,12 @@ const sectionsBody = e => liveSections(e)
   .map(s => (s.bodyHTML ? s.bodyHTML(e) : '')).filter(Boolean).join('');
 
 /* A section's own state changes its controls — "Trace" becomes "Hide", a depth
-   choice appears — and a tab change can retire it entirely, so both containers
-   re-render on request. Exported for the section's owner to call after it acts. */
+   choice appears — and a tab change can retire it entirely, so the panel
+   re-renders on request. Exported for the section's owner to call after it
+   acts. */
 export function refreshPanel() {
   if (!current) return;
   renderDock();
-  renderFloat();
 }
 
 /* Clicks the panel does not recognise are offered to each live section in turn,
@@ -355,125 +357,6 @@ function closeDock() {
   setExtraReserve(0);
 }
 
-/* ---- the float -------------------------------------------------------------
-   Opened from the dock, closed on its own, dragged by its header. Remembers
-   where it was put for the rest of the session, so clicking a second marker
-   does not throw it back to the middle of the screen. */
-
-let floatPos = null;
-
-function renderFloat() {
-  if (!floatOpen || !current) { floater.hidden = true; return; }
-  floater.innerHTML = headHTML(current) + sectionsBody(current) + buildBody(current);
-  accent(floater, current);
-  floater.hidden = false;
-  if (!floatPos) floatPos = anchorToMarker();
-  placeFloat();
-}
-
-/* Open beside the dot that was clicked, not in the middle of the screen: the
-   whole point of this treatment is that the detail arrives where the reader is
-   already looking. placeFloat() then pulls it back inside the viewport, so the
-   preferred position can be stated simply and be wrong at the edges. */
-function anchorToMarker() {
-  const r = markerRect();
-  const f = floater.getBoundingClientRect();
-  if (!r) return { x: (innerWidth - f.width) / 2, y: (innerHeight - f.height) / 3 };
-  const below = r.bottom + 12;
-  const fits = below + f.height < innerHeight - dockHeight() - 12;
-  return {
-    x: r.left + r.width / 2 - f.width / 2,
-    y: fits ? below : r.top - f.height - 12
-  };
-}
-
-const dockHeight = () => (dock && !dock.hidden ? dock.offsetHeight : 0);
-
-function placeFloat() {
-  const r = floater.getBoundingClientRect();
-  const x = Math.min(Math.max(8, floatPos.x), Math.max(8, innerWidth - r.width - 8));
-  const y = Math.min(Math.max(8, floatPos.y), Math.max(8, innerHeight - r.height - 8));
-  floatPos = { x, y };
-  floater.style.left = x + 'px';
-  floater.style.top = y + 'px';
-}
-
-function bindFloatDrag() {
-  let from = null;
-  floater.addEventListener('pointerdown', ev => {
-    const head = ev.target.closest('.dt-head');
-    /* Links too: capturing the pointer for a drag can swallow the click on
-       the reference icon in the header. */
-    if (!head || ev.target.closest('button, a')) return;
-    from = { px: ev.clientX, py: ev.clientY, x: floatPos.x, y: floatPos.y };
-    try { floater.setPointerCapture(ev.pointerId); } catch (_) {}
-    floater.classList.add('dragging');
-    ev.preventDefault();
-  });
-  floater.addEventListener('pointermove', ev => {
-    if (!from) return;
-    floatPos = { x: from.x + (ev.clientX - from.px), y: from.y + (ev.clientY - from.py) };
-    placeFloat();
-  });
-  const stop = ev => {
-    if (!from) return;
-    from = null;
-    floater.classList.remove('dragging');
-    try { floater.releasePointerCapture(ev.pointerId); } catch (_) {}
-  };
-  floater.addEventListener('pointerup', stop);
-  floater.addEventListener('pointercancel', stop);
-}
-
-/* ---- the marker, and the chip that sits on it -------------------------------
-   The second of the two treatments: rather than reading the record at the foot
-   of the window, the reader gets one small offer at the dot and opens the
-   detail there.
-
-   The chip is positioned in viewport coordinates on every frame while a record
-   is selected. A cheaper approach would listen for scroll and resize, but the
-   marker also moves for reasons that fire no event a listener can catch — a
-   tab switch, a window change redrawing the lanes, the smooth scroll that
-   clearOfDock() starts. One getBoundingClientRect per frame on a single
-   element costs nothing and cannot fall out of step. The loop only runs while
-   something is selected. */
-
-function markerRect() {
-  const k = current ? String(current._k) : null;
-  if (k === null) return null;
-  const el = [
-    document.querySelector(`.milestone[data-k="${k}"]`),
-    document.querySelector(`#donut .rk[data-k="${k}"]`)
-  ].find(x => x && x.getBoundingClientRect().height > 0);
-  return el ? el.getBoundingClientRect() : null;
-}
-
-function positionChip() {
-  chipRAF = requestAnimationFrame(positionChip);
-  if (!current) return;
-  const r = markerRect();
-  /* No visible marker means the reader is on the Home or Table tab: the dock
-     still holds the record, but there is nothing here to pin a chip to. */
-  if (!r) { chip.hidden = true; return; }
-  chip.hidden = false;
-  const w = chip.offsetWidth, h = chip.offsetHeight;
-  let x = r.left + r.width / 2 - w / 2;
-  let y = r.bottom + 8;
-  if (y + h > innerHeight - dockHeight() - 8) y = r.top - h - 8;
-  chip.style.left = Math.min(Math.max(8, x), innerWidth - w - 8) + 'px';
-  chip.style.top = Math.min(Math.max(8, y), innerHeight - h - 8) + 'px';
-}
-
-function startChip() {
-  if (!chipRAF) positionChip();
-}
-
-function stopChip() {
-  cancelAnimationFrame(chipRAF);
-  chipRAF = 0;
-  chip.hidden = true;
-}
-
 /* ---- selection -------------------------------------------------------------
    The dock is fixed to the foot of the window, and the timeline is often taller
    than the space left above it, so the marker that was just clicked can end up
@@ -499,7 +382,7 @@ export function refreshSelection() {
   document.querySelectorAll('#donut .rk').forEach(c => {
     c.classList.toggle('sel', k !== null && c.dataset.k === k);
   });
-  if (current) { renderDock(); renderFloat(); }
+  if (current) renderDock();
 }
 
 /* Only on a fresh open. Doing it inside refreshSelection() would move the page
@@ -526,25 +409,14 @@ export function openDetail(e) {
   if (!e) return;
   if (current === e) { closeDetail(); return; }   // clicking the same dot closes
   current = e;
-  /* A float anchored to the last dot would be pointing at the wrong one. It is
-     opened per-dot from the chip, so it closes with the dot it belonged to. */
-  floatOpen = false;
-  floater.hidden = true;
-  floatPos = null;
   renderDock();
-  startChip();
   refreshSelection();
   revealSelected();
 }
 
 export function closeDetail() {
   current = null;
-  floatOpen = false;
-  floatPos = null;
-  stopChip();
   closeDock();
-  floater.hidden = true;
-  floater.innerHTML = '';
   refreshSelection();
 }
 
@@ -575,8 +447,6 @@ export function initDetail(events, log) {
   }
 
   dock = document.getElementById('detailDock');
-  floater = document.getElementById('detailFloat');
-  chip = document.getElementById('detailChip');
 
   dock.addEventListener('click', ev => {
     const b = ev.target.closest('button');
@@ -587,18 +457,5 @@ export function initDetail(events, log) {
   /* A section can stop applying when the reader changes tab — the dependency
      controls are timeline-only — so the open panel re-renders on a switch. */
   onViewChange(() => refreshPanel());
-  chip.addEventListener('click', () => {
-    floatOpen = true;
-    floatPos = null;          // re-anchor to whichever dot the chip is on now
-    renderFloat();
-  });
-  floater.addEventListener('click', ev => {
-    const b = ev.target.closest('button');
-    if (!b) return;
-    if (b.dataset.act === 'close') { floatOpen = false; floater.hidden = true; }
-    else routeClick(b);
-  });
-  bindFloatDrag();
   addEventListener('keydown', ev => { if (ev.key === 'Escape') closeDetail(); });
-  addEventListener('resize', () => { if (floatOpen && floatPos) placeFloat(); });
 }
