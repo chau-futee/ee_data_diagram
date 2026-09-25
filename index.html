@@ -221,9 +221,9 @@
   td.empties{text-align:center;color:var(--muted);font-style:italic;padding:26px 10px}
 
   /* ---- expandable rows ------------------------------------------------
-     The detail panel has three containers now: the dock, the float, and the
-     row a reader opens here. The head and body markup is the same in all
-     three (detailPanelHTML in detail.js) — only the frame differs, which is
+     The detail panel has two containers: the dock at the foot of the window
+     and the row a reader opens here. The head and body markup is the same in
+     both (detailPanelHTML in detail.js) — only the frame differs, which is
      why everything below styles the frame and nothing inside it. */
   th.exp,td.exp{width:36px;padding-right:0}
   /* The expander column has no visible heading — the buttons say what they do.
@@ -257,25 +257,23 @@
     font-size:12.5px;font-weight:600;color:#42506b;cursor:pointer}
   .clearbtn:disabled{opacity:.4;cursor:not-allowed}
   /* ---- detail panel ---------------------------------------------------
-     One body, two containers. .dt-dock is fixed across the foot of the
-     window; .dt-float is the same content lifted out and made draggable.
-     Everything inside is shared, so the two cannot describe a record
-     differently — only frame it differently. */
+     .dt-dock is fixed across the foot of the window. The same body is drawn
+     inside an expanded table row by .dt-inrow above, so everything from
+     .dt-head down is shared and neither container can describe a record
+     differently — only frame it differently.
+
+     The draggable .dt-float and the .dt-chip pinned to the marker were the
+     second of two treatments and have been removed; the dock was kept. */
   /* --sys is written onto the container by accent() in detail.js: the bar down
      the left edge is the record's system colour, and it is the only one in the
      panel now that the header names the system in words. */
-  .dt-dock,.dt-float{background:var(--card);border:1px solid var(--line);
+  .dt-dock{background:var(--card);border:1px solid var(--line);
     border-left:3px solid var(--sys,var(--line));
     font-size:13px;color:#42506b}
   .dt-dock{position:fixed;left:0;right:0;bottom:0;z-index:30;border-width:1px 0 0 3px;
     border-radius:16px 16px 0 0;padding:14px clamp(16px,2.5vw,40px) 18px;
     max-height:40vh;overflow:auto;box-shadow:0 -6px 24px rgba(20,30,50,.10)}
-  .dt-float{position:fixed;z-index:40;width:min(820px,calc(100vw - 32px));
-    max-height:70vh;overflow:auto;border-radius:14px;padding:14px 18px 18px;
-    box-shadow:0 16px 44px rgba(20,30,50,.24)}
-  .dt-float .dt-head{cursor:grab}
-  .dt-float.dragging .dt-head{cursor:grabbing}
-  .dt-dock[hidden],.dt-float[hidden]{display:none}
+  .dt-dock[hidden]{display:none}
 
   .dt-head{display:flex;align-items:flex-start;gap:12px;padding-bottom:12px;
     border-bottom:1px solid var(--line);margin-bottom:14px}
@@ -294,15 +292,6 @@
     border-radius:4px;color:var(--muted);text-decoration:none}
   .reflink:hover{color:var(--ink);background:var(--line)}
   .reflink:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
-  /* Pinned to the marker, so it has to read as attached to the chart rather
-     than floating over it: dark like the tooltip, small, with a leader notch. */
-  .dt-chip{position:fixed;z-index:35;border:0;background:var(--ink);color:#fff;
-    font:inherit;font-size:11.5px;font-weight:600;letter-spacing:.01em;
-    padding:5px 11px;border-radius:999px;cursor:pointer;white-space:nowrap;
-    box-shadow:0 3px 12px rgba(20,30,50,.3)}
-  .dt-chip:hover{background:#33405a}
-  .dt-chip:focus-visible{outline:2px solid #fff;outline-offset:-4px}
-  .dt-chip[hidden]{display:none}
   /* Now labelled rather than a bare glyph, and tall enough to be a touch
      target. flex:none keeps it off the title when the title is long. */
   /* Actions and Close share the top-right of the panel. Actions are outlined
@@ -519,15 +508,11 @@
   </div>
 </div>
 
-<!-- DETAIL PANEL — written by js/detail.js when a marker is clicked.
-     The dock is the docked-at-the-foot version; the float is the same content
-     in a draggable window, opened by the dock's "Show detail" button. Both
-     start empty and hidden; neither is drawn until there is a record. -->
+<!-- DETAIL PANEL — written by js/detail.js when a marker is clicked. Docked at
+     the foot of the window. Starts empty and hidden; it is not drawn until
+     there is a record. The table draws the same panel inside an expanded row
+     and needs no element here. -->
 <div class="dt-dock" id="detailDock" role="region" aria-label="Milestone detail" hidden></div>
-<div class="dt-float" id="detailFloat" role="dialog" aria-label="Milestone detail" hidden></div>
-<!-- The second treatment: one offer, pinned to the marker that was clicked.
-     js/detail.js keeps it on the dot as the page scrolls and the views redraw. -->
-<button type="button" class="dt-chip" id="detailChip" hidden>Show detail</button>
 
 <!-- TOOLTIP -->
 <div class="tip" id="tip"></div>
