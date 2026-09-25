@@ -96,7 +96,7 @@
       "reviewedBy": "",
       "reviewedDate": "",
       "upDeps": ["Opening Comments Due"],
-      "downDeps": ["Evidentiary Hearing (Optional)", "Briefing (Optional)", "Proposed Decision Published"],
+      "downDeps": ["Evidentiary Hearing (Optional)"],
       "reference": null,
       "show": 0
     },
@@ -112,7 +112,7 @@
       "reviewedBy": "",
       "reviewedDate": "",
       "upDeps": ["Reply Comments Due"],
-      "downDeps": ["Proposed Decision Published"],
+      "downDeps": ["Briefing (Optional)"],
       "reference": null,
       "show": 0
     },
@@ -127,7 +127,7 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": ["Reply Comments Due"],
+      "upDeps": ["Evidentiary Hearing (Optional)"],
       "downDeps": ["Proposed Decision Published"],
       "reference": null,
       "show": 0
@@ -143,7 +143,7 @@
       "freq": "Biennial",
       "reviewedBy": "",
       "reviewedDate": "",
-      "upDeps": ["Evidentiary Hearing (Optional)", "Briefing (Optional)", "Reply Comments Due"],
+      "upDeps": ["Briefing (Optional)"],
       "downDeps": ["Proposed Decision Adopted"],
       "reference": null,
       "show": 1

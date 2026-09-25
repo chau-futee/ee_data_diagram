@@ -141,12 +141,10 @@
   /* ---- dependency chain ---------------------------------------------
      The overlay shares the coordinate space of #lanes, so a line drawn
      at a marker's measured position survives horizontal scroll without
-     recalculation. It is inert apart from the warning badges: the lines
-     must never eat a hover meant for a marker. */
+     recalculation. It is wholly inert: nothing on it is clickable, and a
+     line must never eat a hover meant for a marker. */
   .chainoverlay{position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none;
     overflow:hidden}
-  .chainoverlay .chainbadge{pointer-events:auto;cursor:pointer}
-  .chainoverlay .chainbadge:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
   /* The chain's own line in the record panel: the counts, then any note about
      the data behind them. Sentences, so they wrap and sit full width rather
      than becoming more chips in the header row. */
@@ -164,14 +162,6 @@
     font:inherit;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer}
   .dt-chainmode button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(20,30,50,.12)}
   .dt-chainmode button:focus-visible{outline:2px solid #b9c6da;outline-offset:1px}
-  .chainpop{position:fixed;z-index:45;max-width:360px;background:var(--card);
-    border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:12.5px;
-    color:#42506b;box-shadow:0 12px 32px rgba(20,30,50,.22)}
-  .chainpop[hidden]{display:none}
-  .chainpop p{margin:0 0 8px;line-height:1.45}
-  .chainpop b{color:var(--ink)}
-  .chainpop-x{border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 10px;
-    font:inherit;font-size:12px;font-weight:600;color:#42506b;cursor:pointer}
   /* The record the chain was opened from, distinguished from the rest of it. */
   .milestone.chain-root .m-dot{box-shadow:0 0 0 3px var(--card),0 0 0 5px var(--ink)}
   .milestone.chain-root .m-lbl{color:var(--ink);font-weight:700}
@@ -456,9 +446,8 @@
           <li><b>Month grid</b> switches itself off when a month cell is too narrow to read as a guide; the hint next to it says how narrow.</li>
           <li>Small dots with no label are crowded milestones — hover for the name, or use <b>Show all labels</b>.</li>
           <li><b>Click any marker</b> for its record: the date history, what it waits on, and what waits on it. It opens at the foot of the window, and a <b>Show detail</b> button appears on the marker itself, which puts the same content in a draggable panel beside the dot. Click the marker again, or press Escape, to close.</li>
-          <li><b>Trace dependencies</b>, in that record panel, draws the connections on the lanes, and the depth choice sits beside it. <b>Direct links</b> shows only what the record itself joins to; <b>Full chain</b> follows every connection to its end — on the current data that reaches 32 milestones from most starting points, so start direct. The panel also reports the counts, any link recorded on one side only, and any member outside the window. This is timeline-only: the controls do not appear on the other tabs.</li>
-          <li>A chain member <b>outside the selected window</b> has no marker, so its link is drawn dashed to the edge of its own lane and tagged with the name and month. Widen the window to bring it into view.</li>
-          <li>An <b>!</b> on a link means the dependency is recorded on one side only — one record names the other, and the other does not name it back. Click it for which side is missing.</li>
+          <li><b>Trace dependencies</b>, in that record panel, draws the connections on the lanes, and the depth choice sits beside it. <b>Direct links</b> shows only what the record itself joins to; <b>Full chain</b> follows every connection to its end — on the current data that reaches 32 milestones from most starting points, so start direct. The panel also reports the counts and any member outside the window. This is timeline-only: the controls do not appear on the other tabs.</li>
+          <li>A chain member <b>outside the selected window</b> has no marker, so its link is drawn as a dashed line to the edge of its own lane — that lane tells you which system the chain continues into, and the record panel names the members themselves. Widen the window to bring them into view.</li>
           <li>The <b>date handle</b> above the lanes is draggable. Focus it and use ← → for a day, shift + ← → for a month, Home to return to today. It turns amber once moved, and a reload always restores today.</li>
           <!-- written by renderNowLine() in ui.js. Hidden by CSS while empty, so it
                cannot get stuck visible or stuck hidden if the two fall out of step. -->

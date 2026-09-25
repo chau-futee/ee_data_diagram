@@ -2,9 +2,9 @@
    chainview.js — the dependency chain ON THE TIMELINE.
 
    Everything a reader sees of a chain lives here: the connectors drawn over
-   the lanes, the stub that leaves the window, the badge on a one-sided link,
-   the dimming of everything not in the chain, and the controls and notes this
-   file contributes to the record panel. It asks
+   the lanes, the stub that leaves the window, the dimming of everything not in
+   the chain, and the controls and notes this file contributes to the record
+   panel. It asks
    chain.js what the graph says and never works it out itself.
 
        config.js  <-  ui.js  <-  chain.js  <-  detail.js  <-  chainview.js
@@ -29,10 +29,14 @@
    does not draw — at the 2026-2027 default, CET Planning (Dec 2025) is
    upstream of CET Data Spec Update (Apr 2026) and has no marker to point at.
    The connector is drawn anyway, as a dashed stub running to the edge of the
-   track IN THE OFF-WINDOW RECORD'S OWN LANE, tagged with its name and month.
-   It ends at the boundary rather than at a position, because that record has
-   no position in this window. The window is never changed for the reader; the
-   panel lists what is off-window so the count is checkable.
+   track IN THE OFF-WINDOW RECORD'S OWN LANE. It ends at the boundary rather
+   than at a position, because that record has no position in this window.
+
+   The stub carries no label. It briefly named the record and its month at the
+   boundary, which collided with the marker labels already sitting in that lane
+   and made both unreadable. Which lane the stub runs into is the fact worth
+   drawing; WHICH record is at the other end is a fact worth reading, so the
+   panel names them instead. The window is never changed for the reader.
 
    POSITIONS ARE MEASURED, NOT COMPUTED. Marker x comes from the layout pass in
    ui.js, which nudges labels and stretches lanes, and from the horizontal
@@ -43,7 +47,7 @@
 
 import { esc, eventName, monthYearLabel, absMonthIn, spanMonths } from './config.js';
 import { win } from './ui.js';
-import { chainFor, missingSide, EDGE_SOURCE } from './chain.js';
+import { chainFor } from './chain.js';
 import { registerPanelSection, refreshPanel } from './detail.js';
 
 /* ---- state ---------------------------------------------------------------- */
@@ -51,16 +55,27 @@ import { registerPanelSection, refreshPanel } from './detail.js';
 let ROOT = null;            // the record the chain is drawn for, or null
 let MODE = 'direct';        // 'direct' (1 hop) | 'full' (everything connected)
 let MODEL = null;           // the last answer from chain.js
-let overlay, pop;
+let overlay;
 let raf = 0, sig = '';
 
 const HOPS = { direct: 1, full: Infinity };
 
-/* Two-sided links are drawn in ink, one-sided links in the amber this page
-   already uses for a data caveat (.dt-warn). Colour carries whether the data
-   agrees with itself; the dash carries whether the link leaves the window. */
+/* The chain root wears two box-shadow rings (.milestone.chain-root .m-dot),
+   which extend 5px past the measured dot and would otherwise swallow a chevron
+   placed against its edge. */
+const ROOT_RING = 5;
+/* Clear air between the dot and the point of the chevron. */
+const HEAD_GAP = 5;
+/* How long the chevron's own segment is. It only exists to orient the marker,
+   so it is short enough to read as an arrowhead rather than a second line. */
+const HEAD_LEN = 7;
+
+/* One ink for every link. Colour was briefly doing a second job — marking the
+   links recorded on one side only — and between that, the dashes for links
+   leaving the window, the arrowheads and the dimming, the lanes had four
+   things to read at once. The one-sided count stays, as a sentence in the
+   panel, where it does not compete with the drawing. */
 const INK = '#42506b';
-const WARN = '#B07A28';
 
 export const isChainOpen = () => !!ROOT;
 const isOpenFor = e => ROOT === e;
@@ -141,7 +156,17 @@ function dotCentre(e, base) {
   const el = m.querySelector('.m-dot') || m;
   const r = el.getBoundingClientRect();
   if (!r.height) return null;              // laid out but not showing
-  return { x: r.left - base.left + r.width / 2, y: r.top - base.top + r.height / 2 };
+  /* The radius matters as much as the centre: there are three dot sizes on the
+     lanes — 17px normally, 12px for a crowded marker (data-s="0"), and the
+     chain root's two extra rings, which are box-shadows and so do not appear
+     in the measured box. Measuring rather than assuming keeps the chevron
+     clear of whichever one it is approaching. */
+  const ring = m.classList.contains('chain-root') ? ROOT_RING : 0;
+  return {
+    x: r.left - base.left + r.width / 2,
+    y: r.top - base.top + r.height / 2,
+    r: r.width / 2 + ring
+  };
 }
 
 /* Where a stub for an off-window record ends: the edge of that record's own
@@ -154,8 +179,7 @@ function laneEdge(e, base) {
   const before = absMonthIn(e, win) < 0;
   return {
     x: before ? r.left - base.left + 16 : r.right - base.left - 16,
-    y: (r.top + r.bottom) / 2 - base.top,
-    side: before ? 'left' : 'right'
+    y: (r.top + r.bottom) / 2 - base.top
   };
 }
 
@@ -224,10 +248,6 @@ function curve(a, b) {
   return `M${a.x},${a.y} C${a.x + dx},${a.y} ${b.x - dx},${b.y} ${b.x},${b.y}`;
 }
 
-/* Halfway along, near enough: the badge only has to sit on its own line and
-   clear of the dots at either end. */
-const midpoint = (a, b) => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 - 6 });
-
 function drawOverlay(lanes, base, seen) {
   /* isConnected, not just null: a redraw empties #lanes, which detaches the
      overlay without clearing this reference. Testing only for null left a live
@@ -235,52 +255,34 @@ function drawOverlay(lanes, base, seen) {
   if (!overlay || !overlay.isConnected) {
     overlay = document.createElement('div');
     overlay.className = 'chainoverlay';
-    overlay.addEventListener('click', onBadge);
-    overlay.addEventListener('keydown', ev => {
-      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); onBadge(ev); }
-    });
     /* First child, so the lines paint UNDER the markers rather than across
        them — the same reason mountNowLine() inserts its rule here. */
     lanes.insertBefore(overlay, lanes.firstChild);
   }
   const w = lanes.offsetWidth, h = lanes.offsetHeight;
-  let paths = '', badges = '', tags = '';
+  let paths = '';
 
-  MODEL.edges.forEach((edge, i) => {
+  MODEL.edges.forEach(edge => {
     const a = seen.get(edge.from), b = seen.get(edge.to);
-    const colour = edge.oneSided ? WARN : INK;
-    let from = null, to = null, dashed = false, tag = null;
+    let from = null, to = null, dashed = false;
 
     if (a && b) {
       from = a; to = b;
     } else if (a && !b) {
       /* the successor is outside the window: run to the edge of ITS lane */
-      to = laneEdge(edge.to, base); from = a; dashed = true; tag = { at: to, e: edge.to };
+      to = laneEdge(edge.to, base); from = a; dashed = true;
     } else if (!a && b) {
-      from = laneEdge(edge.from, base); to = b; dashed = true; tag = { at: from, e: edge.from };
+      from = laneEdge(edge.from, base); to = b; dashed = true;
     }
     if (!from || !to) return;    // both ends outside the window: the panel says so
 
-    paths += `<path d="${curve(from, to)}" fill="none" stroke="${colour}" stroke-width="1.6"`
-          + (dashed ? ' stroke-dasharray="5 4"' : '')
-          + ` opacity=".85" marker-end="url(#chainArrow)"/>`;
-
-    if (tag) {
-      const anchor = tag.at.side === 'left' ? 'start' : 'end';
-      const dx = tag.at.side === 'left' ? 10 : -10;
-      tags += `<text x="${tag.at.x + dx}" y="${tag.at.y + 17}" text-anchor="${anchor}"`
-           + ` font-size="10" font-weight="600" fill="${colour}">`
-           + `${esc(eventName(tag.e))} · ${esc(monthYearLabel(tag.e))}</text>`;
-    }
-
-    if (edge.oneSided || edge.ambiguous) {
-      const p = midpoint(from, to);
-      badges += `<g class="chainbadge" data-edge="${i}" tabindex="0" role="button"`
-             + ` aria-label="Data note about this link">`
-             + `<circle cx="${p.x}" cy="${p.y}" r="7.5" fill="#fdf7ec" stroke="${WARN}" stroke-width="1"/>`
-             + `<text x="${p.x}" y="${p.y + 3.5}" text-anchor="middle" font-size="10"`
-             + ` font-weight="700" fill="${WARN}">!</text></g>`;
-    }
+    /* No marker-end here. The line runs the whole way to the dot, because
+       stopping it short leaves the reader guessing which of several dots it
+       was heading for. The chevron is placed separately, back from the end by
+       the dot's own radius, in the pass below. */
+    paths += `<path class="chainline" d="${curve(from, to)}" fill="none" stroke="${INK}"`
+          + ` stroke-width="1.6"${dashed ? ' stroke-dasharray="5 4"' : ''}`
+          + ` opacity=".85" data-inset="${(to.r || 0) + HEAD_GAP}"/>`;
   });
 
   overlay.innerHTML =
@@ -289,76 +291,52 @@ function drawOverlay(lanes, base, seen) {
     + ` markerWidth="5" markerHeight="5" orient="auto-start-reverse">`
     + `<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.6"`
     + ` stroke-linecap="round" stroke-linejoin="round"/></marker></defs>`
-    + paths + tags + badges + `</svg>`;
+    + paths + `</svg>`;
+
+  placeHeads();
 }
 
-/* ---- the badge note ---------------------------------------------------------
-   The wording lives here rather than in chain.js: that file states which record
-   is silent, this one says it in a sentence. */
+/* Second pass, once the paths are in the document and the browser can measure
+   them. For each line, walk back along it from the end by the inset — the
+   target dot's radius plus a gap — and lay a short segment there carrying the
+   arrow marker. Using the path's own length means the chevron follows the
+   curve's tangent, so it points the way the line actually arrives rather than
+   the way the two endpoints happen to line up.
 
-function noteFor(edge) {
-  const lines = [];
-  const miss = missingSide(edge);
-  if (miss) {
-    lines.push(`<b>Recorded on one side only.</b> `
-      + `${esc(eventName(miss.recordedOn))} lists this link in its `
-      + `${miss.field === 'downDeps' ? 'downward' : 'upward'} dependencies, but `
-      + `${esc(eventName(miss.silent))} does not list it in its `
-      + `${miss.missingField === 'upDeps' ? 'upward' : 'downward'} dependencies.`);
-    lines.push(EDGE_SOURCE === 'union'
-      ? `It is drawn because the chain reads both directions of the file. It may be `
-        + `an incomplete entry, or it may be deliberate — the data does not say which.`
-      : `It is drawn from one end only, because the chain reads each record's own fields.`);
-  }
-  if (edge.ambiguous) {
-    lines.push(`<b>Ambiguous target.</b> `
-      + `"${esc(String(edge.deps[0] && edge.deps[0].event || edge.deps[0]))}" matches `
-      + `${edge.candidates} milestones, and every match is shown.`);
-  }
-  return lines.map(l => `<p>${l}</p>`).join('');
-}
-
-function onBadge(ev) {
-  const g = ev.target.closest('.chainbadge');
-  if (!g) return;
-  const edge = MODEL && MODEL.edges[+g.dataset.edge];
-  if (!edge) return;
-  showPop(g.getBoundingClientRect(), noteFor(edge));
-}
-
-function showPop(at, html) {
-  if (!pop) {
-    pop = document.createElement('div');
-    pop.className = 'chainpop';
-    pop.addEventListener('click', e => {
-      if (e.target.closest('[data-act="closepop"]')) hidePop();
-    });
-    document.body.appendChild(pop);
-  }
-  pop.innerHTML = html
-    + `<button type="button" class="chainpop-x" data-act="closepop">Close</button>`;
-  pop.hidden = false;
-  const w = pop.offsetWidth, h = pop.offsetHeight;
-  let x = at.left + at.width / 2 - w / 2;
-  let y = at.bottom + 8;
-  if (y + h > innerHeight - 8) y = at.top - h - 8;
-  pop.style.left = Math.min(Math.max(8, x), innerWidth - w - 8) + 'px';
-  pop.style.top = Math.min(Math.max(8, y), innerHeight - h - 8) + 'px';
-}
-
-function hidePop() {
-  if (pop) { pop.hidden = true; pop.innerHTML = ''; }
+   A stub to the lane edge has no dot at its end and so no inset, which puts
+   its chevron at the boundary, where the line stops. */
+function placeHeads() {
+  const svg = overlay.firstChild;
+  if (!svg) return;
+  let heads = '';
+  svg.querySelectorAll('path.chainline').forEach(path => {
+    const len = path.getTotalLength();
+    const inset = Math.min(+path.dataset.inset || 0, Math.max(0, len - HEAD_LEN - 2));
+    if (len < HEAD_LEN + 2) return;        // too short to carry a head legibly
+    const tip = path.getPointAtLength(len - inset);
+    const tail = path.getPointAtLength(len - inset - HEAD_LEN);
+    heads += `<line x1="${tail.x}" y1="${tail.y}" x2="${tip.x}" y2="${tip.y}"`
+          + ` stroke="${INK}" stroke-width="1.9" opacity=".9"`
+          + ` marker-end="url(#chainArrow)"/>`;
+  });
+  svg.insertAdjacentHTML('beforeend', heads);
 }
 
 /* ---- what the panel shows -----------------------------------------------------
    The controls sit beside Close; the notes sit under the header, above the
    three columns. Both are this file's markup — detail.js only places them.
 
-   The notes exist because three things are true of the drawing and cannot be
-   read off it: a link recorded on one side only looks like any other link until
-   you notice its badge, a member outside the window has no dot to count, and a
-   record with no dependencies at all draws nothing, which is indistinguishable
-   from a feature that failed. */
+   The notes exist because two things are true of the drawing and cannot be
+   read off it: a member outside the window has no dot to count, and a record
+   with no dependencies draws nothing at all, which is indistinguishable from a
+   feature that failed.
+
+   One-sided links are deliberately NOT among them. They are an artefact of the
+   file being authored from both ends, and the plan is to make upDeps the source
+   of truth and derive downDeps from it — at which point no edge can be recorded
+   on one side, and a note about it would be reporting a problem that no longer
+   exists. chain.js still flags them, and initChain() still reports the count to
+   the console, so the migration can be checked; the reader is not shown it. */
 
 function panelHeadHTML() {
   const on = !!ROOT;
@@ -388,11 +366,6 @@ function panelBodyHTML() {
   const off = MODEL.nodes.filter(n => offWindow(n.event));
   let notes = '';
 
-  if (MODEL.oneSided.length) {
-    notes += `<span class="chainnote">${MODEL.oneSided.length} link`
-      + `${MODEL.oneSided.length === 1 ? ' is' : 's are'} recorded on one side only. `
-      + `Open the <b>!</b> on the line for which record is missing the entry.</span>`;
-  }
   if (off.length) {
     notes += `<span class="chainnote">Outside this window, drawn to the lane edge: `
       + off.map(n => `${esc(eventName(n.event))} (${esc(monthYearLabel(n.event))})`).join('; ')
@@ -436,12 +409,6 @@ export function initChainView() {
   });
 
   addEventListener('keydown', ev => {
-    if (ev.key !== 'Escape') return;
-    if (pop && !pop.hidden) hidePop(); else closeChain();
+    if (ev.key === 'Escape') closeChain();
   });
-  addEventListener('click', ev => {
-    if (pop && !pop.hidden && !pop.contains(ev.target) && !ev.target.closest('.chainbadge')) {
-      hidePop();
-    }
-  }, true);
 }
