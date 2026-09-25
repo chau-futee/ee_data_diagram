@@ -288,6 +288,12 @@
   .dt-facts{display:flex;flex-wrap:wrap;gap:5px 26px;margin-top:7px;
     font-size:12.5px;color:var(--muted)}
   .dt-fact b{color:var(--ink);font-weight:600}
+  /* Download icon after an event name, in the detail header and the table's
+     Milestone column. Drawn by refLinkHTML() in detail.js. */
+  .reflink{display:inline-flex;vertical-align:-2px;margin-left:6px;padding:1px;
+    border-radius:4px;color:var(--muted);text-decoration:none}
+  .reflink:hover{color:var(--ink);background:var(--line)}
+  .reflink:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
   /* Pinned to the marker, so it has to read as attached to the chart rather
      than floating over it: dark like the tooltip, small, with a leader notch. */
   .dt-chip{position:fixed;z-index:35;border:0;background:var(--ink);color:#fff;

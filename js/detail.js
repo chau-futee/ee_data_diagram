@@ -274,11 +274,31 @@ function fact(label, value) {
    by side. The 12px swatch is gone — "System: eTRM" names the system, so the
    colour is carried by the bar down the panel's left edge instead, set by
    accent(). */
+/* THE REFERENCE LINK. events.json carries `reference` on every record: null
+   where there is no file, a hyperlink string where there is one. Only a
+   non-empty string produces the icon, so null, "" and any non-string value all
+   render nothing. Opens in a new tab; rel="noopener noreferrer" keeps the new
+   tab from reaching back into this page. Exported so the table's Milestone
+   column draws the identical icon. */
+const DL_SVG = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" '
+  + 'stroke="currentColor" stroke-width="2" stroke-linecap="round" '
+  + 'stroke-linejoin="round" aria-hidden="true" focusable="false">'
+  + '<path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>';
+
+export function refLinkHTML(e) {
+  const url = e && typeof e.reference === 'string' ? e.reference.trim() : '';
+  if (!url) return '';
+  const label = `Download reference file for ${eventName(e)} (opens in a new tab)`;
+  return `<a class="reflink" href="${esc(url)}" target="_blank" rel="noopener noreferrer"`
+    + ` aria-label="${esc(label)}" title="${esc(label)}">${DL_SVG}</a>`;
+}
+
 function headHTML(e) {
   const { label } = eventMonth(e);
   return `<div class="dt-head">`
-    + `<div class="dt-titles"><b>${esc(eventName(e))}</b>`
+    + `<div class="dt-titles"><b>${esc(eventName(e))}${refLinkHTML(e)}</b>`
     + `<div class="dt-facts">`
+    + fact('Type:', e.eventType)
     + fact('System:', NAME[e.sys] || SHORT[e.sys] || e.sys)
     + fact('Deadline:', label)
     + fact('Reviewed by:', e.reviewedBy)
@@ -369,7 +389,9 @@ function bindFloatDrag() {
   let from = null;
   floater.addEventListener('pointerdown', ev => {
     const head = ev.target.closest('.dt-head');
-    if (!head || ev.target.closest('button')) return;
+    /* Links too: capturing the pointer for a drag can swallow the click on
+       the reference icon in the header. */
+    if (!head || ev.target.closest('button, a')) return;
     from = { px: ev.clientX, py: ev.clientY, x: floatPos.x, y: floatPos.y };
     try { floater.setPointerCapture(ev.pointerId); } catch (_) {}
     floater.classList.add('dragging');

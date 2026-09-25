@@ -21,7 +21,7 @@ import {
   sysOrder, COL, NAME, SHORT, months, year, SPAN,
   absMonth, monthLabel, esc, eventName
 } from './config.js';
-import { detailPanelHTML } from './detail.js';
+import { detailPanelHTML, refLinkHTML } from './detail.js';
 
 /* Sentinel for the "not set" option. Must survive being written into an HTML
    attribute — a U+0000 does not; the parser rewrites it and the option then
@@ -84,7 +84,7 @@ export function drawTable(events) {
           aria-expanded="${isOpen}" aria-label="${label}" title="${label}"
           >${isOpen ? '\u2212' : '+'}</button></td>
         <td class="sysc"><i class="sysdot" style="background:${COL[e.sys]}"></i>${esc(SHORT[e.sys])}</td>
-        <td>${esc(name)}</td>
+        <td>${esc(name)}${refLinkHTML(e)}</td>
         <td class="dline">${monthLabel(absMonth(e))}</td>
         <td class="num">${e.freq ? esc(e.freq) : ''}</td>
       </tr>`;
