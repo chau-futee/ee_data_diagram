@@ -106,7 +106,7 @@ export function drawDonut(events, all, win) {
     s += `<circle class="rk" data-t="${esc(name)}" data-s="${esc(e.sys)}" data-when="${esc(label)}"`
        + ` data-k="${e._k}" tabindex="0" role="button" aria-label="${esc(name)}, ${esc(label)}"`
        + ` cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="7" fill="${COL[e.sys]}" stroke="#fff"`
-       + ` stroke-width="2" style="cursor:pointer"/>`;
+       + ` stroke-width="2"/>`;
   });
 
   svg.innerHTML = s;
@@ -116,8 +116,10 @@ export function drawDonut(events, all, win) {
   const byK = new Map(events.map(e => [String(e._k), e]));
 
   svg.querySelectorAll('.rk').forEach(el => {
-    const html = `<b>${esc(NAME[el.dataset.s])}</b>${el.dataset.t}`
-               + `<br><span style="opacity:.7">${el.dataset.when}</span>`;
+    /* dataset returns the decoded text (&amp; comes back as &), so the name is
+       escaped again here before it goes into the tooltip's innerHTML. */
+    const html = `<b>${esc(NAME[el.dataset.s])}</b>${esc(el.dataset.t)}`
+               + `<br><span class="tip-when">${el.dataset.when}</span>`;
     el.addEventListener('mousemove', ev => showTip(ev, html));
     el.addEventListener('mouseleave', hideTip);
     el.addEventListener('mouseenter', () => el.setAttribute('r', '9'));

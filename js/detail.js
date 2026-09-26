@@ -298,7 +298,10 @@ const DL_SVG = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" '
 
 export function refLinkHTML(e) {
   const url = e && typeof e.reference === 'string' ? e.reference.trim() : '';
-  if (!url) return '';
+  /* http and https only. esc() keeps the value inside the href attribute but
+     does not stop a javascript: URL, which would run when clicked (OWASP XSS
+     Prevention Cheat Sheet: allow http and https URLs only). */
+  if (!/^https?:\/\//i.test(url)) return '';
   const label = `Download reference file for ${eventName(e)} (opens in a new tab)`;
   return `<a class="reflink" href="${esc(url)}" target="_blank" rel="noopener noreferrer"`
     + ` aria-label="${esc(label)}" title="${esc(label)}">${DL_SVG}</a>`;

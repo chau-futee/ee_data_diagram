@@ -70,13 +70,6 @@ const HEAD_GAP = 5;
    so it is short enough to read as an arrowhead rather than a second line. */
 const HEAD_LEN = 7;
 
-/* One ink for every link. Colour was briefly doing a second job — marking the
-   links recorded on one side only — and between that, the dashes for links
-   leaving the window, the arrowheads and the dimming, the lanes had four
-   things to read at once. The one-sided count stays, as a sentence in the
-   panel, where it does not compete with the drawing. */
-const INK = '#42506b';
-
 export const isChainOpen = () => !!ROOT;
 const isOpenFor = e => ROOT === e;
 
@@ -280,17 +273,16 @@ function drawOverlay(lanes, base, seen) {
        stopping it short leaves the reader guessing which of several dots it
        was heading for. The chevron is placed separately, back from the end by
        the dot's own radius, in the pass below. */
-    paths += `<path class="chainline" d="${curve(from, to)}" fill="none" stroke="${INK}"`
-          + ` stroke-width="1.6"${dashed ? ' stroke-dasharray="5 4"' : ''}`
-          + ` opacity=".85" data-inset="${(to.r || 0) + HEAD_GAP}"/>`;
+    /* Stroke, width, opacity and dashes live in the stylesheet (.chainline). */
+    paths += `<path class="chainline${dashed ? ' dashed' : ''}" d="${curve(from, to)}"`
+          + ` data-inset="${(to.r || 0) + HEAD_GAP}"/>`;
   });
 
   overlay.innerHTML =
     `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="false">`
     + `<defs><marker id="chainArrow" viewBox="0 0 10 10" refX="9" refY="5"`
     + ` markerWidth="5" markerHeight="5" orient="auto-start-reverse">`
-    + `<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.6"`
-    + ` stroke-linecap="round" stroke-linejoin="round"/></marker></defs>`
+    + `<path class="chainarrow" d="M2 1L8 5L2 9" stroke="context-stroke"/></marker></defs>`
     + paths + `</svg>`;
 
   placeHeads();
@@ -315,8 +307,7 @@ function placeHeads() {
     if (len < HEAD_LEN + 2) return;        // too short to carry a head legibly
     const tip = path.getPointAtLength(len - inset);
     const tail = path.getPointAtLength(len - inset - HEAD_LEN);
-    heads += `<line x1="${tail.x}" y1="${tail.y}" x2="${tip.x}" y2="${tip.y}"`
-          + ` stroke="${INK}" stroke-width="1.9" opacity=".9"`
+    heads += `<line class="chainhead" x1="${tail.x}" y1="${tail.y}" x2="${tip.x}" y2="${tip.y}"`
           + ` marker-end="url(#chainArrow)"/>`;
   });
   svg.insertAdjacentHTML('beforeend', heads);

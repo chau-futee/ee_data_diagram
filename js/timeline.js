@@ -91,7 +91,6 @@ export function drawTimeline(events, all, win) {
     const evs = tl[sys] || [];
     const track = document.createElement('div');
     track.className = 'track' + (evs.length ? '' : ' empty');
-    track.style.borderLeft = '1px solid var(--line)';
 
     /* Two different empty states — a lane with no records at all is awaiting
        data; a lane whose records all sit outside the chosen window is not, and
@@ -122,7 +121,7 @@ export function drawTimeline(events, all, win) {
                   + `<div class="m-lbl">${esc(name)}</div>`;
 
       const html = () => `<b>${esc(NAME[sys])}</b>${esc(name)}`
-                       + `<br><span style="opacity:.7">${m.dataset.when}</span>`;
+                       + `<br><span class="tip-when">${m.dataset.when}</span>`;
       m.addEventListener('mousemove', e => showTip(e, html()));
       m.addEventListener('mouseleave', hideTip);
       m.addEventListener('focus', () => {

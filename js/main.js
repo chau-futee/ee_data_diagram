@@ -15,7 +15,7 @@
 
 import {
   DATA_URL, LOG_URL, sysOrder, year, firstYear, lastYear,
-  absMonth, SPAN, absMonthIn, spanMonths, inWindow, eventName
+  absMonth, SPAN, absMonthIn, spanMonths, inWindow, eventName, esc
 } from './config.js';
 import { drawLegend } from './legend.js';
 import { drawDonut } from './donut.js';
@@ -138,7 +138,8 @@ function showLoadError(err) {
   if (!el) return;
   el.hidden = false;
   el.innerHTML = '<b>The milestone data could not be loaded, so this page is empty.</b><br>'
-    + `${err.message}<br><br>`
+    /* Escaped: a JSON parse error can quote part of the file's own text. */
+    + `${esc(err.message)}<br><br>`
     + 'If you opened this file directly from disk, that is the cause: browsers block '
     + 'data requests from <code>file://</code>. Serve the folder instead — '
     + '<code>python3 -m http.server</code> from the project root, then open '

@@ -50,6 +50,8 @@
   .tip{position:fixed;pointer-events:none;background:#1f2733;color:#fff;font-size:12.5px;
     padding:8px 11px;border-radius:8px;max-width:240px;opacity:0;transition:opacity .12s;z-index:20;box-shadow:0 6px 20px rgba(0,0,0,.25)}
   .tip b{display:block;margin-bottom:2px}
+  .tip.show{opacity:1}
+  .tip .tip-when{opacity:.7}
   /* timeline */
   /* timeline: horizontal scroller with a frozen lane-label column */
   .tlscroll{overflow-x:auto;overflow-y:hidden;padding-bottom:8px;
@@ -75,7 +77,7 @@
   a.lanelabel{text-decoration:none}
   a.lanelabel:hover{filter:brightness(1.08);text-decoration:underline}
   a.lanelabel:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
-  .track{position:relative;height:82px}
+  .track{position:relative;height:82px;border-left:1px solid var(--line)}
   .track.empty{height:52px;display:flex;align-items:center;justify-content:center}
   .track.empty span{font-size:12px;color:var(--muted);font-style:italic}
   .milestone{position:absolute;top:26px;transform:translate(-50%,-50%);cursor:pointer;--off:0px;--dx:0px}
@@ -145,6 +147,17 @@
      line must never eat a hover meant for a marker. */
   .chainoverlay{position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none;
     overflow:hidden}
+  /* The lines themselves, the short arrowhead segments, and the chevron shape in
+     the <marker>, all tuned here in one place. One ink for every link: colour was
+     briefly doing a second job (marking links recorded on one side only), and with
+     the dashes, arrowheads and dimming the lanes had four things to read at once.
+     The one-sided count stays as a sentence in the panel instead.
+     .chainarrow's width is in the marker's own units, which scale with the
+     .chainhead stroke width, so changing .chainhead also resizes the chevron. */
+  .chainline{fill:none;stroke:#42506b;stroke-width:1.6;opacity:.85}
+  .chainline.dashed{stroke-dasharray:5 4}
+  .chainhead{stroke:#42506b;stroke-width:1.9;opacity:.9}
+  .chainarrow{fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
   /* The chain's own line in the record panel: the counts, then any note about
      the data behind them. Sentences, so they wrap and sit full width rather
      than becoming more chips in the header row. */
@@ -365,6 +378,7 @@
   /* the chosen marker, in both views */
   .milestone.sel .m-dot{box-shadow:0 0 0 3px var(--card),0 0 0 5px var(--ink)}
   .milestone.sel .m-lbl{color:var(--ink);font-weight:700}
+  #donut .rk{cursor:pointer}
   #donut .rk.sel{stroke:var(--ink);stroke-width:3}
   #donut .rk:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}

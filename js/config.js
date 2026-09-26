@@ -162,7 +162,7 @@ export const RING = { cx: 280, cy: 280, rOuter: 250, rInner: 96 };
 
 /* must match --now / --now-moved in the stylesheet: the ring spoke is SVG and
    cannot read CSS custom properties */
-export const NOW_COL = { today: '#C1741A', moved: '#5B6473' };
+export const NOW_COL = { today: '#AE8D64', moved: '#5B6473' };
 
 /* ---- layout tuning --------------------------------------------------------- */
 export const NUDGE_OVERLAP = false;
