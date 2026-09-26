@@ -92,14 +92,14 @@ const tip = () => (tipEl ||= document.getElementById('tip'));
 export function showTip(ev, html) {
   const t = tip();
   t.innerHTML = html;
-  t.style.opacity = 1;
+  t.classList.add('show');
   let x = ev.clientX + 14, y = ev.clientY + 14;
   if (x > innerWidth - 250) x = ev.clientX - 250;
   t.style.left = x + 'px';
   t.style.top = y + 'px';
 }
 
-export function hideTip() { tip().style.opacity = 0; }
+export function hideTip() { tip().classList.remove('show'); }
 
 /* ============================================================ view switch == */
 
