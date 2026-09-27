@@ -157,6 +157,10 @@
   .chainline{fill:none;stroke:#42506b;stroke-width:1.6;opacity:.85}
   .chainline.dashed{stroke-dasharray:5 4}
   .chainhead{stroke:#42506b;stroke-width:1.9;opacity:.9}
+  /* Deadline conflict: the upstream milestone is dated after the one waiting on
+     it. Only the line carries this, because only the line can say which way the
+     lateness runs. */
+  .chainline.conflict,.chainhead.conflict{stroke:#b3261e;opacity:1}
   .chainarrow{fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
   /* The chain's own line in the record panel: the counts, then any note about
      the data behind them. Sentences, so they wrap and sit full width rather
@@ -177,6 +181,9 @@
   .dt-chainmode button:focus-visible{outline:2px solid #b9c6da;outline-offset:1px}
   /* The record the chain was opened from, distinguished from the rest of it. */
   .milestone.chain-root .m-dot{box-shadow:0 0 0 3px var(--card),0 0 0 5px var(--ink)}
+  /* The milestone holding something up. Declared after .chain-root so it wins
+     when a record is both: the conflict is the more urgent of the two facts. */
+  .milestone.chain-late .m-dot{box-shadow:0 0 0 3px var(--card),0 0 0 5px #b3261e}
   .milestone.chain-root .m-lbl{color:var(--ink);font-weight:700}
   .dim{opacity:.16}
   .glow{filter:drop-shadow(0 0 5px rgba(31,39,51,.5))}
@@ -379,6 +386,13 @@
        .dt-dep-bad   the value names no milestone at all. */
   .dt-py-guess{color:#b3261e;border-bottom:1px dotted #e3a9a4;cursor:help}
   .dt-dep-bad{color:#b3261e;border-bottom:1px dotted #e3a9a4;cursor:help}
+  /* A dependency that is fully known but dated later than the milestone waiting
+     on it. A HIGHLIGHT, not red text: red text is reserved for dependency data
+     that is missing or unknown, and this is a schedule problem, not a data one.
+     An entry can carry both — the highlight wraps it, and any red text inside
+     keeps its own colour, underline and tooltip. */
+  .dt-dep-conflict{background:#fdeceb;box-shadow:0 0 0 1px #f3cdc9;border-radius:4px;
+    padding:1px 5px;cursor:help}
   .dt-warn{margin:0 0 9px;font-size:12px;color:#7a5a2b;background:#fdf7ec;
     border:1px solid #ecdcc0;border-radius:8px;padding:7px 9px}
   /* Stacked lines, not pills: a dependency is a phrase to read, and a row of

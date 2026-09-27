@@ -185,7 +185,7 @@ const offWindow = e => {
 
 function clearMarks() {
   document.querySelectorAll('#lanes .milestone').forEach(m => {
-    m.classList.remove('dim', 'chain-root');
+    m.classList.remove('dim', 'chain-root', 'chain-late');
     const d = m.querySelector('.m-dot');
     if (d) d.classList.remove('glow');
   });
@@ -219,10 +219,18 @@ function paint(force) {
 function markMarkers(seen) {
   const inChain = new Set();
   seen.forEach((_, e) => inChain.add(String(e._k)));
+
+  /* The upstream end of every late link in this chain. A record can be late in
+     one link and kept waiting in another, so the ring is put on the end that is
+     actually holding something up, and only for the links currently drawn. */
+  const late = new Set();
+  MODEL.edges.forEach(edge => { if (edge.lateBy > 0) late.add(String(edge.from._k)); });
+
   document.querySelectorAll('#lanes .milestone').forEach(m => {
     const on = inChain.has(m.dataset.k);
     m.classList.toggle('dim', !on);
     m.classList.toggle('chain-root', on && m.dataset.k === String(ROOT._k));
+    m.classList.toggle('chain-late', on && late.has(m.dataset.k));
     const d = m.querySelector('.m-dot');
     if (d) d.classList.toggle('glow', on);
   });
@@ -273,9 +281,15 @@ function drawOverlay(lanes, base, seen) {
        stopping it short leaves the reader guessing which of several dots it
        was heading for. The chevron is placed separately, back from the end by
        the dot's own radius, in the pass below. */
-    /* Stroke, width, opacity and dashes live in the stylesheet (.chainline). */
-    paths += `<path class="chainline${dashed ? ' dashed' : ''}" d="${curve(from, to)}"`
-          + ` data-inset="${(to.r || 0) + HEAD_GAP}"/>`;
+    /* Stroke, width, opacity and dashes live in the stylesheet (.chainline).
+       A link whose upstream milestone is dated after the one waiting on it
+       takes .conflict, and so does its chevron: the red belongs to the line,
+       which is the only part of the drawing that can say WHICH way the
+       lateness runs. */
+    const late = edge.lateBy > 0;
+    paths += `<path class="chainline${dashed ? ' dashed' : ''}${late ? ' conflict' : ''}"`
+          + ` d="${curve(from, to)}" data-inset="${(to.r || 0) + HEAD_GAP}"`
+          + (late ? ' data-conflict="1"' : '') + `/>`;
   });
 
   overlay.innerHTML =
@@ -307,7 +321,9 @@ function placeHeads() {
     if (len < HEAD_LEN + 2) return;        // too short to carry a head legibly
     const tip = path.getPointAtLength(len - inset);
     const tail = path.getPointAtLength(len - inset - HEAD_LEN);
-    heads += `<line class="chainhead" x1="${tail.x}" y1="${tail.y}" x2="${tip.x}" y2="${tip.y}"`
+    const late = path.dataset.conflict === '1';
+    heads += `<line class="chainhead${late ? ' conflict' : ''}"`
+          + ` x1="${tail.x}" y1="${tail.y}" x2="${tip.x}" y2="${tip.y}"`
           + ` marker-end="url(#chainArrow)"/>`;
   });
   svg.insertAdjacentHTML('beforeend', heads);

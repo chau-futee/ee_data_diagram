@@ -264,7 +264,14 @@ export function initChain(events) {
   });
 
   EDGES = [...store.values()];
-  EDGES.forEach(edge => { edge.ambiguous = edge.candidates > 1; });
+  EDGES.forEach(edge => {
+    edge.ambiguous = edge.candidates > 1;
+    /* A deadline conflict: the milestone being waited on is dated AFTER the
+       one waiting for it. Measured in months and carried on the edge, because
+       it belongs to the LINK and not to either milestone — the same record can
+       be the late one in one link and the one kept waiting in another. */
+    edge.lateBy = Math.max(0, ord(edge.from) - ord(edge.to));
+  });
 
   /* DOWN is the derivation: the same edges, grouped by the record being waited
      on. Nothing else in the app has to know that downward is computed — it asks
@@ -281,6 +288,12 @@ export function initChain(events) {
 }
 
 /* ---- reading the graph ------------------------------------------------------ */
+
+/* By how many months `upstream` misses `downstream`: 0 when it lands on or
+   before it, positive when it lands after. The one place the rule is written,
+   so the panel and the drawing cannot disagree about what counts as late. */
+export const lateBy = (upstream, downstream) =>
+  (upstream && downstream) ? Math.max(0, ord(upstream) - ord(downstream)) : 0;
 
 /* Sorted by date, then title: a list a reader will scan, not a set. */
 const byDate = (a, b) => (ord(a) - ord(b)) || part(a.event).localeCompare(part(b.event));
@@ -396,6 +409,7 @@ export function diagnostics() {
     edges: EDGES.length,
     connected: touched.size,
     ambiguous: EDGES.filter(e => e.ambiguous).length,
+    conflicts: EDGES.filter(e => e.lateBy > 0).length,
     assumedPy: ASSUMED.length,
     unresolved: UNRESOLVED.length,
     depMatch: DEP_MATCH,

@@ -59,7 +59,7 @@ import {
 import { setExtraReserve, onViewChange } from './ui.js';
 /* Downward dependencies are not a field any more. Upward is the source of
    truth, and chain.js turns it around to say what waits on a record. */
-import { upwardReport, downwardReport } from './chain.js';
+import { upwardReport, downwardReport, lateBy } from './chain.js';
 
 /* ---- state ---------------------------------------------------------------- */
 
@@ -288,6 +288,31 @@ function depName(rec, assumed) {
   return `${marked} ${title}`;
 }
 
+/* A milestone this record waits on that is itself dated later than this record.
+
+   Two marks, two meanings, and an entry can carry both:
+
+     RED FONT       something about the dependency is missing or unknown —
+                    a program year nobody wrote, or a name matching no
+                    milestone. A data-entry problem.
+     RED HIGHLIGHT  the dependency is fully known and the dates do not work.
+                    A schedule problem.
+
+   So the highlight wraps the entry without recolouring it, and any red font
+   inside keeps its own colour, underline and tooltip. Hovering the year tells
+   you the year was inferred; hovering anywhere else on the row tells you the
+   deadline conflicts. */
+function lateName(rec, assumed, waiting, months) {
+  const when = r => `${months3(r)} ${r.y}`;
+  const why = `Deadline conflict. This milestone is due ${when(waiting)}, but it waits on `
+    + `${rec.event}, which is not due until ${when(rec)} \u2014 ${months} month`
+    + `${months === 1 ? '' : 's'} later.`;
+  return `<span class="dt-dep-conflict" title="${esc(why)}">${depName(rec, assumed)}</span>`;
+}
+
+/* Month name from a record's own date, without borrowing the window's index. */
+const months3 = r => months[(monthOf(r) - 1 + 1200) % 12];
+
 /* Each value this record wrote upward, in the order it wrote them. A value that
    names no milestone is still listed — deleting it from the view would hide a
    broken reference that someone needs to fix. */
@@ -302,7 +327,10 @@ function upwardHTML(e) {
         : 'No milestone carries this title.';
       return `<span class="dt-dep-bad" title="${esc(why)}">${esc(String(r.dep))}</span>`;
     }
-    return r.matches.map(m => depName(m, r.assumed)).join('<br>');
+    return r.matches.map(m => {
+      const months = lateBy(m, e);
+      return months ? lateName(m, r.assumed, e, months) : depName(m, r.assumed);
+    }).join('<br>');
   });
 }
 
