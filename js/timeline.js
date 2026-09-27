@@ -109,7 +109,7 @@ export function drawTimeline(events, all, win) {
       m.style.left = (ev.f * 100) + '%';
       m.tabIndex = 0;
       /* `id` is a leftover from the hardcoded trace and drives nothing now —
-         the dependency chain is derived from upDeps/downDeps and finds its
+         the dependency chain is derived from upDeps and finds its
          markers by data-k. The line is kept so a record that does carry an id
          still surfaces it in the DOM. */
       if (ev.id) m.dataset.id = ev.id;

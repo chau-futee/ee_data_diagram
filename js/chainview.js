@@ -322,12 +322,9 @@ function placeHeads() {
    with no dependencies draws nothing at all, which is indistinguishable from a
    feature that failed.
 
-   One-sided links are deliberately NOT among them. They are an artefact of the
-   file being authored from both ends, and the plan is to make upDeps the source
-   of truth and derive downDeps from it — at which point no edge can be recorded
-   on one side, and a note about it would be reporting a problem that no longer
-   exists. chain.js still flags them, and initChain() still reports the count to
-   the console, so the migration can be checked; the reader is not shown it. */
+   One-sided links are no longer possible: upDeps is the source of truth and
+   downward is derived from it, so there is one statement per link and no second
+   end to disagree with it. */
 
 function panelHeadHTML() {
   const on = !!ROOT;
