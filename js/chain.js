@@ -6,63 +6,86 @@
    milestones are connected to it, by which edges, and what is doubtful about
    those edges. chainview.js decides how any of that looks.
 
-       config.js  <-  chain.js  <-  chainview.js  <-  main.js
+       config.js  <-  chain.js  <-  detail.js  <-  chainview.js  <-  main.js
 
-   WHAT THE DATA ACTUALLY SAYS. events.json names dependencies by TITLE only —
-   "Annual CET Update", not a record. Three facts about the current file drive
-   every decision below, and all three are properties of the data rather than
-   of this code, so each is a switch rather than an assumption:
+   UPWARD IS THE SOURCE OF TRUTH. Every record states what it waits on, in
+   upDeps, and that is the only field read. Downward dependencies are not read
+   at all — they are DERIVED here, by turning the upward statements around: the
+   milestones that wait on X are exactly the records that named X upward.
 
-     1. 24 of the 59 records carry a dependency, and the edges they imply form
-        ONE connected component of 32 records. A full transitive trace from
-        almost any node therefore reaches most of the graph — which is why the
-        reader is given a depth choice rather than a fixed one.
+   That is why this file now reads the data in one pass instead of two. A
+   dependency used to be recordable from either end, which meant the same fact
+   could be present at one end and missing at the other, and 15 of the 36 edges
+   in the file were in exactly that state. With one authoring direction that
+   class of disagreement cannot occur: there is one statement per link, made by
+   the record that waits.
 
-     2. Fifteen edges are recorded on ONE SIDE ONLY. "CET Final Update" lists
-        "Q1 Claims Submission" in downDeps; that record's upDeps is empty. Read
-        strictly, the relationship exists looking down and not looking up.
-        EDGE_SOURCE decides whether both ends see it, and every edge carries
-        which side declared it so the view can say so.
+   downDeps IS NOT READ. Not to draw, not to check, not to warn about. If a
+   record does not name something upward, nothing waits on it — an absent
+   statement is an answer, not an omission. Any downDeps still sitting in
+   events.json are ignored entirely, and the field can disappear from the data
+   without a line of this file changing.
 
-     3. One dep string, "Annual CET Update", matches three records (PY2026,
-        PY2027, PY2028). DEP_MATCH decides what that resolves to.
+   WHAT THE DATA STILL SAYS. events.json names dependencies by TITLE, not by
+   record. One title, "Annual CET Update", matches three records (PY2026,
+   PY2027, PY2028), so a dep value can still resolve to more than one milestone.
+   DEP_MATCH decides what happens then, and every edge carries how many records
+   its dep value matched.
 
    THE PIVOT SEAM. resolveDep(dep, sourceEvent, direction) is the only place a
-   dep value becomes a record. `direction` is passed even though the current
-   strategy ignores it, because the rule most likely to replace it — nearest
-   match AFTER the source when looking down, BEFORE it when looking up — needs
-   it, and retrofitting an argument means touching every call site. It also
-   accepts a qualified dep, { event, py, sys }, so authoring a precise
-   dependency in the data later is a data change and not a code change.
+   dep value becomes a record. `direction` is passed even though every call now
+   reads upward, because the rule most likely to replace the current one —
+   nearest match BEFORE the source, looking up — needs it, and retrofitting an
+   argument means touching every call site. It also accepts a qualified dep,
+   { event, py, sys }, so authoring a precise dependency in the data later is a
+   data change and not a code change.
    ============================================================================= */
 
-/* ---- the two switches ------------------------------------------------------
-   Both are decisions about what the dataset MEANS, so they are named, sited
-   together, and changed deliberately.
+/* ---- the one switch --------------------------------------------------------
+   A decision about what the dataset MEANS, so it is named, sited on its own,
+   and changed deliberately.
 
-   DEP_MATCH 'all' shows every record a title matches. It is the only strategy
-   that asserts nothing the data cannot support: with dependencies repeating
-   each cycle, and cross-cycle links already present in the file (2028 CET
-   Biennial Avoided Cost Updates waits on 2026 Resolution Adoption — same
-   month, program years two apart), neither a date rule nor a program-year rule
-   is safe yet. 'nearest' is written below, unused, so the pivot is one word.
+   DEP_MATCH 'py' identifies a dependency by PROGRAM YEAR AND TITLE, which is
+   a unique key: no two records in the file share both. A dep value may state
+   the year itself — "2027 Annual CET Update", or { event, py } — and then only
+   that record matches. Where the value states only a title, the year is filled
+   in as the CLOSEST PREVIOUS one: among the records carrying that title, the
+   latest whose program year is at or before the waiting record's own.
 
-   EDGE_SOURCE 'union' reads the file in both directions, so an edge recorded
-   on one side is visible from both ends. 'own' reads only the clicked record's
-   own fields, which makes those fifteen edges visible from one end only.
+   EVERY value that does not state its year is flagged, including the ones that
+   resolve to exactly one record. The flag reports what the data omitted, not
+   how hard the resolution was — a title with one match today acquires more the
+   moment the next cycle is entered, and an unstated year would then start
+   meaning a different milestone with nothing on screen to show it had moved.
+
+   That fits how the data repeats. Dependencies recur each cycle and are the
+   same each cycle, so an unqualified "Measure Package Approval" read from a
+   PY2028 record means the PY2028 one. Where the cycles genuinely cross —
+   2028 CET Biennial Avoided Cost Updates waits on 2026 Resolution Adoption —
+   the value has to state its year, and then it is taken at its word.
+
+   'all' is the previous behaviour, kept: every record the title matches.
+
+   EDGE_SOURCE used to sit beside it, deciding whether a link recorded at only
+   one end counted. Reading upward alone makes the question meaningless — there
+   is only one end to record at — so the switch is gone rather than left to
+   suggest a choice that no longer exists.
    ---------------------------------------------------------------------------- */
-export const DEP_MATCH   = 'all';      // 'all' | 'nearest'
-export const EDGE_SOURCE = 'union';    // 'union' | 'own'
+export const DEP_MATCH = 'py';       // 'py' | 'all'
 
 /* ---- state ---------------------------------------------------------------- */
 
 let ALL = [];
 let BY_NAME = new Map();   // folded title -> [event, ...]
-let OUT = new Map();       // event -> [edge, ...] where the event is `from`
-let IN  = new Map();       // event -> [edge, ...] where the event is `to`
-let EDGES = [];
-let UNRESOLVED = [];       // { event, dep, direction } — named nothing
 let INDEX = new Map();     // event -> its position, so an edge has a stable key
+let UP = new Map();        // event -> [edge, ...] where the event is the one waiting
+let DOWN = new Map();      // event -> [edge, ...] where the event is waited on
+let EDGES = [];
+let UNRESOLVED = [];       // { event, dep, stated } — an upward value naming
+                           // nothing: an unknown title, or a stated year that
+                           // no record carries
+let ASSUMED = [];          // { event, dep, picked, rule } — a value that did
+                           // not state its program year
 
 /* Folded the same way detail.js folds its join key, so the two files cannot
    disagree about whether two titles are the same title. */
@@ -79,39 +102,118 @@ const MATCHERS = {
   /* Every record the title matches. Ambiguity is reported, not resolved. */
   all: candidates => candidates.slice(),
 
-  /* Nearest in time, on the side the direction implies: a downward dependency
-     looks forward from the source, an upward one looks back. Written now,
-     selected never — it is here so DEP_MATCH is a real switch and not a
-     promise. Falls back to every candidate when nothing sits on the right
-     side, rather than silently returning none. */
-  nearest: (candidates, source, direction) => {
-    if (!source || candidates.length < 2) return candidates.slice();
-    const at = ord(source);
-    const side = candidates.filter(c => direction === 'up' ? ord(c) <= at : ord(c) >= at);
-    const pool = side.length ? side : candidates;
-    let best = pool[0];
-    pool.forEach(c => {
-      if (Math.abs(ord(c) - at) < Math.abs(ord(best) - at)) best = c;
-    });
-    return [best];
-  }
+  /* Closest previous program year. The waiting record's own py is the anchor:
+     take the candidate with the highest py at or before it.
+
+     Two fallbacks, both flagged rather than silent, because an unflagged guess
+     is worse than a wrong one you can see:
+
+       'next-py'  nothing exists at or before the anchor, so the earliest later
+                  cycle is used. A PY2026 record waiting on a title that only
+                  exists in PY2028 and PY2030 gets the PY2028 one.
+       'by-date'  the waiting record has no py at all — 13 records in the file
+                  carry a blank one — so the comparison falls back to the
+                  milestone's own date, latest at or before, then earliest. */
+  py: (candidates, source) => {
+    const num = e => {
+      const v = parseInt(String(e && e.py || '').trim(), 10);
+      return Number.isFinite(v) ? v : null;
+    };
+    /* One candidate is still a year nobody wrote, so it is still flagged: the
+       flag reports that events.json did not state the year, not that this file
+       found the choice hard. A title that is unique today stops being unique
+       the moment the next cycle is added, and then the unstated value quietly
+       starts meaning something else.
+
+       It takes the same label as the multi-candidate case, deliberately. The
+       one record may carry a LATER program year than the record waiting on it
+       — CET Final Update (PY2026) waits on CET Biennial Avoided Cost Updates
+       (PY2028) — and that is an artefact of how program years are assigned,
+       not a forward reference: the biennial update is done in 2026 FOR the
+       2028 cycle, and it genuinely precedes the milestone waiting on it. The
+       label follows the dependency, not the arithmetic on the year. */
+    if (candidates.length < 2) {
+      return candidates.length
+        ? { matches: candidates.slice(), assumed: 'previous-py' }
+        : { matches: [] };
+    }
+    const anchor = num(source);
+    if (anchor == null) {
+      const at = ord(source);
+      const back = candidates.filter(c => ord(c) <= at).sort((a, b) => ord(b) - ord(a));
+      const pick = back[0] || candidates.slice().sort((a, b) => ord(a) - ord(b))[0];
+      return { matches: [pick], assumed: 'by-date' };
+    }
+    const back = candidates.filter(c => num(c) != null && num(c) <= anchor)
+                           .sort((a, b) => num(b) - num(a) || ord(a) - ord(b));
+    if (back[0]) return { matches: [back[0]], assumed: 'previous-py' };
+    const fwd = candidates.filter(c => num(c) != null)
+                          .sort((a, b) => num(a) - num(b) || ord(a) - ord(b));
+    return fwd[0] ? { matches: [fwd[0]], assumed: 'next-py' }
+                  : { matches: candidates.slice(), assumed: 'no-py' };
+  },
+
+  /* Every record the title matches. Ambiguity reported, never resolved. */
+  all: candidates => ({ matches: candidates.slice() })
 };
 
+/* A dep value, taken apart. Three shapes are accepted, in this order:
+
+     { event, py, sys }   a qualified dep — the year is stated
+     "2027 Annual CET Update"   a title with the year written in front
+     "Annual CET Update"        a bare title, year to be filled in
+
+   The exact title is tried BEFORE stripping a leading year, so a milestone
+   whose own name began with a year could never be mistaken for a qualified
+   dep. No title in the current file does, but the order costs nothing and the
+   failure it prevents would be silent. */
+function parseDep(dep) {
+  if (dep && typeof dep === 'object') {
+    const py = dep.py == null ? null : String(dep.py).trim();
+    return { title: depTitle(dep), py: py || null, sys: dep.sys ? part(dep.sys) : null,
+             stated: !!py };
+  }
+  const raw = String(dep == null ? '' : dep).trim().replace(/\s+/g, ' ');
+  if (BY_NAME.has(part(raw))) return { title: part(raw), py: null, sys: null, stated: false };
+  const m = /^(\d{4})\s+(.+)$/.exec(raw);
+  if (m && BY_NAME.has(part(m[2]))) {
+    return { title: part(m[2]), py: m[1], sys: null, stated: true };
+  }
+  return { title: part(raw), py: null, sys: null, stated: false };
+}
+
 /* THE ONE PLACE a dep value becomes a record.
-   dep       — a title string, or { event, py?, sys? }
+   dep       — "Title", "2027 Title", or { event, py?, sys? }
    source    — the record the dep was read from
-   direction — 'down' when read from downDeps, 'up' when read from upDeps */
+   direction — 'up' on every call today; the argument is kept because a future
+               matching rule would need to know which way it is looking
+
+   Returns { matches, candidates, assumed, stated }. `assumed` names the rule
+   that filled in a year nobody wrote, and is null when the value said it
+   itself — so a caller can always tell a stated fact from an inferred one. */
 export function resolveDep(dep, source, direction) {
-  const all = BY_NAME.get(depTitle(dep)) || [];
-  /* A qualified dep narrows before the strategy runs, so a precise value in
-     the data always wins over whatever DEP_MATCH would have chosen. */
-  const narrowed = (dep && typeof dep === 'object')
-    ? all.filter(e => (dep.py == null || part(e.py) === part(dep.py))
-                   && (dep.sys == null || part(e.sys) === part(dep.sys)))
-    : all;
-  const pool = narrowed.length ? narrowed : all;
-  const match = MATCHERS[DEP_MATCH] || MATCHERS.all;
-  return { matches: match(pool, source, direction), candidates: all.length };
+  const q = parseDep(dep);
+  const all = BY_NAME.get(q.title) || [];
+  let pool = q.sys ? all.filter(e => part(e.sys) === q.sys) : all;
+
+  /* A stated year is taken at its word, including when it matches nothing:
+     "2029 Annual CET Update" is a wrong reference, not an invitation to pick
+     a nearby year. It surfaces as unresolved, which is what it is. */
+  if (q.stated) {
+    const exact = pool.filter(e => String(e.py || '').trim() === q.py);
+    return { matches: exact, candidates: all.length, assumed: null, stated: true };
+  }
+
+  const rule = MATCHERS[DEP_MATCH] || MATCHERS.py;
+  const out = rule(pool, source, direction) || {};
+  return {
+    matches: out.matches || [],
+    candidates: all.length,
+    /* Non-null whenever the value did not state a year, whatever the rule did
+       with it. null means, and only means, that the data said it. */
+    assumed: (out.matches || []).length ? (out.assumed || 'unstated') : null,
+    stated: false
+  };
 }
 
 /* ---- building -------------------------------------------------------------- */
@@ -120,11 +222,10 @@ function edgeFor(store, from, to) {
   const k = `${INDEX.get(from)}>${INDEX.get(to)}`;
   if (!store.has(k)) {
     store.set(k, {
-      from, to,
-      viaDown: false,        // the `from` record names `to` in downDeps
-      viaUp: false,          // the `to` record names `from` in upDeps
-      deps: [],              // the dep values that produced this edge
-      candidates: 1          // how many records the widest of those matched
+      from, to,              // from is waited on; to is the record that waits
+      deps: [],              // the upward dep values that produced this edge
+      candidates: 1,         // how many records the widest of those matched
+      assumedPy: null        // the rule that filled in a year nobody wrote
     });
   }
   return store.get(k);
@@ -143,56 +244,97 @@ export function initChain(events) {
 
   const store = new Map();
   UNRESOLVED = [];
+  ASSUMED = [];
 
-  const read = (e, field, direction) => {
-    (e[field] || []).forEach(dep => {
-      const { matches, candidates } = resolveDep(dep, e, direction);
-      if (!matches.length) {
-        UNRESOLVED.push({ event: e, dep, direction });
-        return;
-      }
+  /* ONE pass, upward only. Each record's upDeps say what it waits on, so every
+     value read here becomes an edge pointing AT the record that read it. */
+  ALL.forEach(e => {
+    (e.upDeps || []).forEach(dep => {
+      const { matches, candidates, assumed, stated } = resolveDep(dep, e, 'up');
+      if (!matches.length) { UNRESOLVED.push({ event: e, dep, stated }); return; }
+      if (assumed) ASSUMED.push({ event: e, dep, picked: matches[0], rule: assumed });
       matches.forEach(m => {
         if (m === e) return;                      // a record cannot wait on itself
-        const edge = direction === 'down' ? edgeFor(store, e, m) : edgeFor(store, m, e);
-        if (direction === 'down') edge.viaDown = true; else edge.viaUp = true;
+        const edge = edgeFor(store, m, e);
         edge.deps.push(dep);
         edge.candidates = Math.max(edge.candidates, candidates);
+        if (assumed) edge.assumedPy = assumed;
       });
     });
-  };
-
-  ALL.forEach(e => { read(e, 'downDeps', 'down'); read(e, 'upDeps', 'up'); });
-
-  EDGES = [...store.values()];
-  EDGES.forEach(edge => {
-    /* 'both'  — each end records the other
-       'down'  — only the earlier record's downDeps names it
-       'up'    — only the later record's upDeps names it */
-    edge.declared = edge.viaDown && edge.viaUp ? 'both' : (edge.viaDown ? 'down' : 'up');
-    edge.oneSided = edge.declared !== 'both';
-    edge.ambiguous = edge.candidates > 1;
   });
 
-  OUT = new Map(); IN = new Map();
+  EDGES = [...store.values()];
+  EDGES.forEach(edge => { edge.ambiguous = edge.candidates > 1; });
+
+  /* DOWN is the derivation: the same edges, grouped by the record being waited
+     on. Nothing else in the app has to know that downward is computed — it asks
+     downstreamOf() and gets an answer the same shape as upstreamOf(). */
+  UP = new Map(); DOWN = new Map();
   EDGES.forEach(edge => {
-    if (!OUT.has(edge.from)) OUT.set(edge.from, []);
-    if (!IN.has(edge.to)) IN.set(edge.to, []);
-    OUT.get(edge.from).push(edge);
-    IN.get(edge.to).push(edge);
+    if (!DOWN.has(edge.from)) DOWN.set(edge.from, []);
+    if (!UP.has(edge.to)) UP.set(edge.to, []);
+    DOWN.get(edge.from).push(edge);
+    UP.get(edge.to).push(edge);
   });
 
   return diagnostics();
 }
 
-/* ---- traversal ------------------------------------------------------------- */
+/* ---- reading the graph ------------------------------------------------------ */
 
-/* Under EDGE_SOURCE 'own' a record only follows what it wrote down itself: its
-   own downDeps going down, its own upDeps going up. Under 'union' it follows
-   every edge either end recorded. */
-function usable(edge, direction) {
-  if (EDGE_SOURCE !== 'own') return true;
-  return direction === 'down' ? edge.viaDown : edge.viaUp;
+/* Sorted by date, then title: a list a reader will scan, not a set. */
+const byDate = (a, b) => (ord(a) - ord(b)) || part(a.event).localeCompare(part(b.event));
+
+/* What this milestone waits on — straight from its own upDeps. */
+export function upstreamOf(e) {
+  return (UP.get(e) || []).map(edge => edge.from).sort(byDate);
 }
+
+/* What waits on this milestone — DERIVED: every record that named it upward. */
+export function downstreamOf(e) {
+  return (DOWN.get(e) || []).map(edge => edge.to).sort(byDate);
+}
+
+/* ---- the same two lists, with their doubts attached --------------------------
+   upstreamOf and downstreamOf answer "which records"; these answer "which
+   records, and how sure is that". The panel needs the second: a year this file
+   filled in, and a downward value the upward data does not support, are both
+   things a reader should see rather than take on trust.
+
+   Entry shapes:
+     up    { dep, matches, assumed, stated }   assumed names the rule that
+                                               filled in a year, null if the
+                                               value stated it; matches is
+                                               empty when nothing was found
+     down  { event, assumed }                  derived; assumed is carried from
+                                               the edge, so a link that rests
+                                               on a filled-in year is marked at
+                                               both ends
+
+   downwardReport returns the derivation and nothing else. Downward is not an
+   authored direction any more, so there is no second source for this column to
+   disagree with.
+   ---------------------------------------------------------------------------- */
+
+export function upwardReport(e) {
+  return (e && e.upDeps || []).map(dep => {
+    const r = resolveDep(dep, e, 'up');
+    return {
+      dep,
+      matches: r.matches.filter(m => m !== e).sort(byDate),
+      assumed: r.assumed,
+      stated: r.stated
+    };
+  });
+}
+
+export function downwardReport(e) {
+  return (DOWN.get(e) || [])
+    .map(edge => ({ event: edge.to, assumed: edge.assumedPy }))
+    .sort((a, b) => byDate(a.event, b.event));
+}
+
+/* ---- traversal ------------------------------------------------------------- */
 
 /* Breadth-first, each direction walked separately so a node's `direction` says
    which way the reader travelled to reach it. hops caps the distance: 1 is the
@@ -202,9 +344,8 @@ function walk(root, direction, hops, nodes, edges, seenEdges) {
   for (let d = 0; d < hops && frontier.length; d++) {
     const next = [];
     frontier.forEach(cur => {
-      const list = (direction === 'up' ? IN.get(cur) : OUT.get(cur)) || [];
+      const list = (direction === 'up' ? UP.get(cur) : DOWN.get(cur)) || [];
       list.forEach(edge => {
-        if (!usable(edge, direction)) return;
         if (!seenEdges.has(edge)) { seenEdges.add(edge); edges.push(edge); }
         const other = direction === 'up' ? edge.from : edge.to;
         if (nodes.has(other)) return;
@@ -231,23 +372,22 @@ export function chainFor(root, opts) {
     hops,
     nodes: [...nodes.values()],
     edges,
-    oneSided: edges.filter(e => e.oneSided),
     ambiguous: edges.filter(e => e.ambiguous),
     unresolved: UNRESOLVED.filter(u => nodes.has(u.event))
   };
 }
 
-/* Which end of a one-sided edge is missing the entry. The view turns this into
-   a sentence; this file only states which record is silent. */
-export function missingSide(edge) {
-  if (!edge.oneSided) return null;
-  return edge.declared === 'down'
-    ? { recordedOn: edge.from, field: 'downDeps', silent: edge.to, missingField: 'upDeps' }
-    : { recordedOn: edge.to, field: 'upDeps', silent: edge.from, missingField: 'downDeps' };
-}
+/* Every link whose program year was filled in rather than stated, for the
+   console. Each one is a place where writing the year into events.json would
+   make the data say what the drawing already shows. */
+export const assumedDeps = () => ASSUMED.slice();
+
+/* Upward values that name no record: an unknown title, or a stated year no
+   record carries. */
+export const unresolvedDeps = () => UNRESOLVED.slice();
 
 /* For the console on load: the shape of the graph, so a data change that
-   breaks one of the three assumptions at the top is visible immediately. */
+   breaks an assumption at the top of this file is visible immediately. */
 export function diagnostics() {
   const touched = new Set();
   EDGES.forEach(e => { touched.add(e.from); touched.add(e.to); });
@@ -255,10 +395,11 @@ export function diagnostics() {
     records: ALL.length,
     edges: EDGES.length,
     connected: touched.size,
-    oneSided: EDGES.filter(e => e.oneSided).length,
     ambiguous: EDGES.filter(e => e.ambiguous).length,
+    assumedPy: ASSUMED.length,
     unresolved: UNRESOLVED.length,
     depMatch: DEP_MATCH,
-    edgeSource: EDGE_SOURCE
+    key: 'program year + title',
+    source: 'upDeps only; downward derived'
   };
 }

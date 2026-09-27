@@ -23,7 +23,7 @@ import { drawTimeline } from './timeline.js';
 import { drawTable } from './table.js';
 import { initUI, refreshChrome, win, onWindowChange } from './ui.js';
 import { initDetail, refreshSelection } from './detail.js';
-import { initChain } from './chain.js';
+import { initChain, assumedDeps, unresolvedDeps } from './chain.js';
 import { initChainView, refreshChain } from './chainview.js';
 
 let ALL = [];        // every valid record, full range — the table reads this
@@ -172,7 +172,21 @@ async function start() {
     const graph = initChain(ALL);
     console.info('[chain]', graph);
     if (graph.unresolved) {
-      console.warn(`[chain] ${graph.unresolved} dependency value(s) match no milestone.`);
+      console.warn(`[chain] ${graph.unresolved} upward value(s) match no milestone:`);
+      unresolvedDeps().forEach(u => console.warn(
+        `    ${u.event.event} (${u.event.sys}/${u.event.py}) waits on "${u.dep}"`
+        + (u.stated ? ' — that title exists, but not in that program year' : '')));
+    }
+    /* A dependency is keyed by program year and title. Every upward value that
+       does not state its year is listed here, whether or not the year was in
+       doubt: the list is the data-entry backlog, and each line is the exact
+       string that would replace what is in the file. */
+    if (graph.assumedPy) {
+      console.info(`[chain] ${graph.assumedPy} upward value(s) do not state a program `
+        + `year. Each is read as shown, and each is marked red in the record panel:`);
+      assumedDeps().forEach(a => console.info(
+        `    ${a.event.event} (py ${a.event.py}) waits on "${a.dep}" `
+        + `\u2192 read as "${a.picked.py} ${a.picked.event}" (${a.rule})`));
     }
 
     initUI();

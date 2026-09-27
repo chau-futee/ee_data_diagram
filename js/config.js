@@ -178,11 +178,12 @@ export const RESERVE   = 112;              // chain button + scrollbar + page pa
    `id` field that the current events.json does not carry, which is why the old
    trace button dimmed every marker and lit none of them.
 
-   The chain is now derived from the upDeps and downDeps the data actually
-   carries. Its two decisions — how a dep string resolves to a record, and
-   whether an edge recorded on one side counts — are DEP_MATCH and EDGE_SOURCE
-   at the top of chain.js. They are not here because they are decisions about
-   what the dependency data means, not values several files share.
+   The chain is now derived from upDeps alone: every record states what it
+   waits on, and chain.js turns those statements around to say what waits on
+   each record. Its one remaining decision — how a dep title resolves when it
+   matches several records — is DEP_MATCH at the top of chain.js. It is not
+   here because it is a decision about what the dependency data means, not a
+   value several files share.
    ---------------------------------------------------------------------------- */
 
 /* view id -> tab button id. Add a view by adding one entry. */

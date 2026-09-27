@@ -4,7 +4,8 @@
    One record's story, in three parts:
      1. the date history        (data/historical_log.json)
      2. upward dependencies     (events.json -> upDeps)
-     3. downward dependencies   (events.json -> downDeps)
+     3. downward dependencies   (derived by chain.js from every other record's
+                                 upDeps; there is no downward field)
 
    ONE PRESENTATION, at the foot of the window. The DOCK is a panel across the
    bottom, opened by clicking a marker on the timeline or the ring and closed by
@@ -56,6 +57,9 @@ import {
   COL, NAME, SHORT, months, monthOf, esc, eventName, sysLink, typeLink
 } from './config.js';
 import { setExtraReserve, onViewChange } from './ui.js';
+/* Downward dependencies are not a field any more. Upward is the source of
+   truth, and chain.js turns it around to say what waits on a record. */
+import { upwardReport, downwardReport } from './chain.js';
 
 /* ---- state ---------------------------------------------------------------- */
 
@@ -243,9 +247,75 @@ function historyHTML(e) {
 /* Plain stacked lines rather than pills. A dependency is a sentence fragment
    the reader has to read, and several of them wrapped as chips read as tags —
    as though the set were a category the milestone belongs to. */
-function depsHTML(list, emptyMsg) {
-  if (!Array.isArray(list) || !list.length) return `<p class="dt-empty">${esc(emptyMsg)}</p>`;
-  return `<ul class="dt-deps">${list.map(d => `<li>${esc(d)}</li>`).join('')}</ul>`;
+function depsHTML(items, emptyMsg) {
+  if (!Array.isArray(items) || !items.length) return `<p class="dt-empty">${esc(emptyMsg)}</p>`;
+  return `<ul class="dt-deps">${items.map(i => `<li>${i}</li>`).join('')}</ul>`;
+}
+
+/* ---- naming a dependency ------------------------------------------------------
+   A dependency is identified by program year AND title, so both are shown. The
+   year is marked when this app worked it out rather than read it: the record is
+   certain, which year of it was meant is not, and the reader should be able to
+   tell those apart at a glance instead of trusting the list.
+
+   Two kinds of doubt, one colour:
+     .dt-py-guess   the year was filled in — the title alone was written, and
+                    it matches records in more than one cycle
+     .dt-dep-bad    the value names no milestone at all
+
+   Both are red and nothing else. There is no badge next to them: the colour
+   is the signal, and the title attribute carries the explanation for anyone
+   who wants it. A row that needs a label to be understood would be a row that
+   does not belong in a three-column panel. */
+
+function whyGuessed(rule, picked) {
+  const fix = ` Write it into events.json as "${picked.py} ${picked.event}".`;
+  if (rule === 'previous-py') return `Program year not stated for upstream event. Assumed the closest preceding event's PY, PY${picked.py}.`;
+  if (rule === 'next-py') return `Program year not stated for upstream event and upstream event has no cycle existing at or `
+    + `before this milestone. Assumed the closest future event's PY, PY${picked.py}.`;
+  if (rule === 'by-date') return `Program year not available, so the year was read by date.`;
+  return `Year not stated.`;
+}
+
+/* "2027 Annual CET Update", with the 2027 marked when it was inferred. */
+function depName(rec, assumed) {
+  const py = String(rec && rec.py != null ? rec.py : '').trim();
+  const title = esc(String(rec && rec.event || ''));
+  if (!py) return title;
+  const marked = assumed
+    ? `<span class="dt-py-guess" title="${esc(whyGuessed(assumed, rec))}">${esc(py)}</span>`
+    : esc(py);
+  return `${marked} ${title}`;
+}
+
+/* Each value this record wrote upward, in the order it wrote them. A value that
+   names no milestone is still listed — deleting it from the view would hide a
+   broken reference that someone needs to fix. */
+function upwardHTML(e) {
+  return upwardReport(e).map(r => {
+    /* A value naming nothing is still listed, in red, exactly as written. It
+       is what the file says, and deleting it from the view would hide a
+       reference someone needs to fix. */
+    if (!r.matches.length) {
+      const why = r.stated
+        ? 'That title exists, but not in the program year stated here.'
+        : 'No milestone carries this title.';
+      return `<span class="dt-dep-bad" title="${esc(why)}">${esc(String(r.dep))}</span>`;
+    }
+    return r.matches.map(m => depName(m, r.assumed)).join('<br>');
+  });
+}
+
+/* Purely the derivation: every record that names this one upward.
+
+   No years are marked here, and that is deliberate. The years in this column
+   belong to the records doing the waiting, and each of those is read straight
+   off its own record — certain, always. What may be unstated is the year
+   INSIDE that record's upward value, and the place to see that, and fix it, is
+   that record's own upward column. Marking it here would paint the column red
+   while pointing at the wrong row. */
+function downwardHTML(e) {
+  return downwardReport(e).map(d => depName(d.event, null));
 }
 
 /* All three columns now carry a line saying what they hold. Date history had
@@ -258,10 +328,13 @@ function buildBody(e) {
     + historyHTML(e) + '</section>'
     + '<section class="dt-col"><h4>Upward dependencies</h4>'
     + '<p class="dt-note">What this milestone waits on</p>'
-    + depsHTML(e.upDeps, 'None recorded.') + '</section>'
+    + depsHTML(upwardHTML(e), 'None recorded.') + '</section>'
     + '<section class="dt-col"><h4>Downward dependencies</h4>'
     + '<p class="dt-note">What waits on this milestone</p>'
-    + depsHTML(e.downDeps, 'None recorded.') + '</section>'
+    /* Records, not strings, so these carry their program year: the derivation
+       knows WHICH "Annual CET Update" waits, where a bare title could not. */
+    + depsHTML(downwardHTML(e), 'None recorded.')
+    + '</section>'
     + '</div>';
 }
 

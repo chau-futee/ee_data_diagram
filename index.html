@@ -368,6 +368,17 @@
      smaller, so the date is what the eye lands on first. */
   .dt-reason{font-size:12px;line-height:1.4;color:var(--muted)}
   .dt-unset{color:var(--muted);font-style:italic}
+  /* ---- marking what the panel is not sure of --------------------------
+     Two different doubts, deliberately the same colour: both mean "the
+     data does not fully support this line", and a reader does not need to
+     learn two colours to know to look twice. Both carry a title attribute
+     saying which doubt it is.
+
+       .dt-py-guess  the program year was worked out, not read. The record
+                     is certain; which cycle of it was meant is not.
+       .dt-dep-bad   the value names no milestone at all. */
+  .dt-py-guess{color:#b3261e;border-bottom:1px dotted #e3a9a4;cursor:help}
+  .dt-dep-bad{color:#b3261e;border-bottom:1px dotted #e3a9a4;cursor:help}
   .dt-warn{margin:0 0 9px;font-size:12px;color:#7a5a2b;background:#fdf7ec;
     border:1px solid #ecdcc0;border-radius:8px;padding:7px 9px}
   /* Stacked lines, not pills: a dependency is a phrase to read, and a row of

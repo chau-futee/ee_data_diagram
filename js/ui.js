@@ -263,7 +263,7 @@ function updateGrid() {
    against two hardcoded ids in a field the data no longer carries, so the
    button dimmed all 59 markers and lit none.
 
-   The chain is now derived from upDeps/downDeps (chain.js) and drawn over the
+   The chain is now derived from upDeps (chain.js) and drawn over the
    lanes (chainview.js), which owns its own marker classes. This file keeps the
    .dim and .glow classes in play only through the stylesheet — it no longer
    decides who wears them. */
