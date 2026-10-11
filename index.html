@@ -24,9 +24,16 @@
   .toggle button{border:0;background:transparent;padding:9px 18px;border-radius:7px;font-size:14px;
     font-weight:600;color:var(--muted);cursor:pointer;transition:.15s}
   .toggle button.active{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(20,30,50,.12)}
-  .legend{display:flex;flex-wrap:wrap;gap:14px;margin:4px 0 0}
-  .legend span{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:#42506b;font-weight:500}
+  /* Two groups, System and Status, on a shared label column: a wrapped entry
+     lines up under the group's first entry, not under its label. */
+  .legend{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 12px;
+    align-items:start;margin:4px 0 0}
+  .legend .lg-items{display:flex;flex-wrap:wrap;gap:6px 14px}
+  .legend span{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:#42506b;
+    font-weight:500;line-height:20px}
+  .legend .lg-lbl{color:var(--muted)}
   .dot{width:12px;height:12px;border-radius:3px;display:inline-block}
+  .legend .ring{width:8px;height:8px;border-radius:50%;border:2.5px solid;display:inline-block}
   .winbar{display:inline-flex;flex-wrap:wrap;gap:8px;align-items:center}
   .winbar .winlbl{display:inline-flex;align-items:center;justify-content:center;
     padding:0 12px;min-width:88px;font-size:12.5px;font-weight:700;color:var(--ink)}
@@ -92,6 +99,20 @@
   .milestone[data-s="0"] .m-lbl{display:none}
   #lanes.showall .milestone[data-s="0"] .m-lbl{display:block;opacity:.62}
   .milestone[data-s="0"] .m-dot{width:9px;height:9px;border-width:1.5px}
+  /* STATUS RINGS on the timeline. data-st is written by timeline.js for a
+     known status only. The dot's own 2px white border is the gap; the status
+     ring sits outside it, 1.5px (1px on a crowded marker). Colours must match
+     STATUS in config.js. Declared before .chain-root and .sel, which repeat
+     the status ring as their first layer: the selection / root ring stays at
+     3px gap + 2px ink whether or not there is a status, and the status ring
+     shows inside that gap. With no status, --st is unset and that first layer
+     falls back to transparent. */
+  .milestone{--stw:1.5px}
+  .milestone[data-s="0"]{--stw:1px}
+  .milestone[data-st="complete"]{--st:#29B401}
+  .milestone[data-st="delayed"]{--st:#FE0002}
+  .milestone[data-st="atrisk"]{--st:#E8D000}
+  .milestone[data-st] .m-dot{box-shadow:0 0 0 var(--stw) var(--st),0 1px 3px rgba(0,0,0,.25)}
   /* ---- month grid overlay -------------------------------------------
      One overlay for all lanes (36 elements) rather than 36 per track.
      Sits in the flow before the rows, so absolutely-positioned markers
@@ -158,7 +179,7 @@
   /* Deadline conflict: the upstream milestone is dated after the one waiting on
      it. Only the line carries this, because only the line can say which way the
      lateness runs. */
-  .chainline.conflict,.chainhead.conflict{stroke:#b3261e;opacity:1}
+  .chainline.conflict,.chainhead.conflict{stroke:#FE0002;opacity:1}
   .chainarrow{fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
   /* The chain's own line in the record panel: the counts, then any note about
      the data behind them. Sentences, so they wrap and sit full width rather
@@ -178,10 +199,11 @@
   .dt-chainmode button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(20,30,50,.12)}
   .dt-chainmode button:focus-visible{outline:2px solid #b9c6da;outline-offset:1px}
   /* The record the chain was opened from, distinguished from the rest of it. */
-  .milestone.chain-root .m-dot{box-shadow:0 0 0 3px var(--card),0 0 0 5px var(--ink)}
-  /* The milestone holding something up. Declared after .chain-root so it wins
-     when a record is both: the conflict is the more urgent of the two facts. */
-  .milestone.chain-late .m-dot{box-shadow:0 0 0 3px var(--card),0 0 0 5px #b3261e}
+  .milestone.chain-root .m-dot{box-shadow:0 0 0 var(--stw) var(--st,transparent),
+    0 0 0 3px var(--card),0 0 0 5px var(--ink)}
+  /* The milestone holding something up carries .chain-late but no ring of
+     its own: the red line and chevron say which way the lateness runs, and a
+     dot's border is reserved for its status and for selection / chain root. */
   .milestone.chain-root .m-lbl{color:var(--ink);font-weight:700}
   .dim{opacity:.16}
   .glow{filter:drop-shadow(0 0 5px rgba(31,39,51,.5))}
@@ -383,7 +405,14 @@
                      is certain; which cycle of it was meant is not.
        .dt-dep-bad   the value names no milestone at all. */
   .dt-py-guess{color:#b3261e;border-bottom:1px dotted #e3a9a4;cursor:help}
-  .dt-dep-bad{color:#b3261e;border-bottom:1px dotted #e3a9a4;cursor:help}
+  .dt-dep-bad,.dt-st-bad{color:#b3261e;border-bottom:1px dotted #e3a9a4;cursor:help}
+  /* The Status fact. Same shape as .dt-dep-conflict below; Delayed uses its
+     exact colours. Text stays ink on all three. Colours match STATUS in
+     config.js. An unrecognised value takes .dt-st-bad above instead. */
+  .dt-st{border-radius:4px;padding:1px 5px;color:var(--ink)}
+  .dt-st-complete{background:#D9F8DC;box-shadow:0 0 0 1px #AAE4B1}
+  .dt-st-delayed{background:#fdeceb;box-shadow:0 0 0 1px #f3cdc9}
+  .dt-st-atrisk{background:#FEF0BE;box-shadow:0 0 0 1px #EAD67E}
   /* A dependency that is fully known but dated later than the milestone waiting
      on it. A HIGHLIGHT, not red text: red text is reserved for dependency data
      that is missing or unknown, and this is a schedule problem, not a data one.
@@ -399,10 +428,15 @@
   .dt-deps li{margin:0;font-size:12.5px;line-height:1.4;color:#42506b}
 
   /* the chosen marker, in both views */
-  .milestone.sel .m-dot{box-shadow:0 0 0 3px var(--card),0 0 0 5px var(--ink)}
+  .milestone.sel .m-dot{box-shadow:0 0 0 var(--stw) var(--st,transparent),
+    0 0 0 3px var(--card),0 0 0 5px var(--ink)}
   .milestone.sel .m-lbl{color:var(--ink);font-weight:700}
+
+  /* Donut markers are <g class="rk"> groups drawn by donut.js; the selection
+     ring is the .rk-sel layer inside, hidden until the group is selected. */
   #donut .rk{cursor:pointer}
-  #donut .rk.sel{stroke:var(--ink);stroke-width:3}
+  #donut .rk .rk-sel{display:none}
+  #donut .rk.sel .rk-sel{display:inline}
   #donut .rk:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>

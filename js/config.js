@@ -26,8 +26,11 @@
    ---------------------------------------------------------------------------- */
 export const sysOrder = ['cedars', 'acc', 'pa', 'pg', 'etrm', 'deer', 'cns', 'regulatory'];
 
+/* pg was #E24A4A until the status rings arrived. That red sat ΔE00 14.2 from
+   the Delayed ring and read as a status rather than a system; #C74A1F keeps
+   white lane-label text at 4.74:1. */
 export const COL = {                       // swatch, lane label, marker fill
-  etrm: '#5F9E3F', pa: '#556A77', deer: '#7C4DBC', pg: '#E24A4A',
+  etrm: '#5F9E3F', pa: '#556A77', deer: '#7C4DBC', pg: '#C74A1F',
   acc: '#2FA3A8', cedars: '#FCB720', cns: '#B84A96', regulatory: '#2E6FC7'
 };
 
@@ -41,6 +44,45 @@ export const SHORT = {                     // acronym — lane box and table
   etrm: 'eTRM', pa: 'PA Submissions', deer: 'DEER', pg: 'P&G',
   acc: 'ACC', cedars: 'CEDARS', cns: 'C&S', regulatory: 'Regulatory'
 };
+
+/* ---- status ----------------------------------------------------------------
+   events.json carries `status` on every record. Three values mean something:
+   Complete, Delayed, At risk, matched case-insensitively ("AT RISK" is At
+   risk). The match is otherwise exact: no trimming, so a stray space surfaces
+   as an unknown value rather than being quietly repaired.
+
+     statusKey(e)  ->  'complete' | 'delayed' | 'atrisk'   a known status
+                       null                                null, absent or ""
+                       'unknown'                           anything else
+
+   A known status draws a ring around the marker in both visuals and a
+   highlighted value in the record panel. Null draws no ring and an em dash.
+   Unknown draws no ring and the raw value in the panel's flagged-data red.
+
+   ring  the marker ring and the legend swatch. SVG and inline styles cannot
+         read the stylesheet, so the colours live here; index.html repeats
+         them for the timeline's box-shadow rings and must be kept in step.
+   bg / edge  the record-panel highlight. Delayed is the existing
+         .dt-dep-conflict pair; Complete and At risk keep its lightness and
+         raise the chroma so the hue reads.
+   ---------------------------------------------------------------------------- */
+export const statusOrder = ['complete', 'delayed', 'atrisk'];
+
+export const STATUS = {
+  complete: { label: 'Complete', ring: '#29B401', bg: '#D9F8DC', edge: '#AAE4B1' },
+  delayed:  { label: 'Delayed',  ring: '#FE0002', bg: '#fdeceb', edge: '#f3cdc9' },
+  atrisk:   { label: 'At risk',  ring: '#E8D000', bg: '#FEF0BE', edge: '#EAD67E' }
+};
+
+const STATUS_BY_TEXT = Object.fromEntries(
+  statusOrder.map(k => [STATUS[k].label.toLowerCase(), k]));
+
+export function statusKey(e) {
+  const v = e ? e.status : null;
+  if (v === null || v === undefined || v === '') return null;
+  if (typeof v !== 'string') return 'unknown';
+  return STATUS_BY_TEXT[v.toLowerCase()] || 'unknown';
+}
 
 /* per-lane type-size override where the abbreviation still runs long.
    The lane label box gives its text 92px (a 120px cell, less a 12px right

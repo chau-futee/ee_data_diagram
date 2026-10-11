@@ -21,7 +21,8 @@
 
 import {
   sysOrder, COL, NAME, SHORT, months, RING, polar, esc, hasData,
-  spanMonths, degPerMonth, windowYears, windowLabel, eventName
+  spanMonths, degPerMonth, windowYears, windowLabel, eventName,
+  STATUS, statusKey
 } from './config.js';
 import { showTip, hideTip } from './ui.js';
 import { openDetail } from './detail.js';
@@ -93,7 +94,28 @@ export function drawDonut(events, all, win) {
      Names are escaped on the way into the attributes: the workbook has titles
      containing & (P&G, em&v), which broke the raw version. data-t carries the
      displayed name — eventName(), i.e. py + event — so the tooltip built from
-     it below reads the same as the timeline label and the table row. */
+     it below reads the same as the timeline label and the table row.
+
+     Each marker is a <g class="rk"> of concentric layers, radii in ring units:
+
+         0   - 4.5       system colour
+         4.5 - 5.5       white gap
+         5.5 - 5.5+w     status ring, .rk-st (Complete / Delayed / At risk only)
+         7.5 - 9.5       selection ring, .rk-sel, the same with or without a
+                         status: a white gap from 5.5 to 7.5 and an ink ring
+
+     w is 1 unit, but never less than one screen pixel: the ring is sized by
+     window height (index.html), so a unit is anywhere from about 0.5px to
+     1.26px on screen, and a sub-pixel line anti-aliases into a faint one.
+     fitRings() sets w from the drawn size, and runs again whenever the donut
+     changes size. A selected marker reaches 9.5, inside its 19.25-unit lane
+     band (half: 9.625). There is no hover grow: the old 7 -> 9 grow already
+     spilled into the next lane.
+
+     Paint order puts the status ring between the selection's white gap and
+     its ink ring, so the status still shows inside the gap when selected.
+     The transparent hit disc keeps the click target at 7.5 whether or not a
+     ring is drawn. */
   events.forEach(e => {
     const i = sysOrder.indexOf(e.sys);
     const r = rOuter - i * band - band / 2;
@@ -101,15 +123,27 @@ export function drawDonut(events, all, win) {
     const [x, y] = polar(cx, cy, r, rm * deg);
     const label = `${months[Math.floor(rm) % 12]} ${win.startYear + Math.floor(Math.floor(rm) / 12)}`;
     const name = eventName(e);
+    const st = statusKey(e);
+    const known = st && st !== 'unknown';
+    const at = `cx="${x.toFixed(2)}" cy="${y.toFixed(2)}"`;
     /* data-k is the index into the event array, written so a click on the ring
        opens the same record the timeline would. */
-    s += `<circle class="rk" data-t="${esc(name)}" data-s="${esc(e.sys)}" data-when="${esc(label)}"`
-       + ` data-k="${e._k}" tabindex="0" role="button" aria-label="${esc(name)}, ${esc(label)}"`
-       + ` cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="7" fill="${COL[e.sys]}" stroke="#fff"`
-       + ` stroke-width="2"/>`;
+    s += `<g class="rk" data-t="${esc(name)}" data-s="${esc(e.sys)}" data-when="${esc(label)}"`
+       + ` data-k="${e._k}"${known ? ` data-st="${st}"` : ''} tabindex="0" role="button"`
+       + ` aria-label="${esc(name)}, ${esc(label)}${known ? `, ${STATUS[st].label}` : ''}">`
+       + `<circle ${at} r="7.5" fill="transparent"/>`
+       + `<circle ${at} r="5" fill="${COL[e.sys]}" stroke="#fff" stroke-width="1"/>`
+       + `<circle class="rk-sel" ${at} r="6.5" fill="none" stroke="#fff" stroke-width="2"/>`
+       + (known
+          ? `<circle class="rk-st" ${at} r="6" fill="none" stroke="${STATUS[st].ring}" stroke-width="1"/>`
+          : '')
+       + `<circle class="rk-sel" ${at} r="8.5" fill="none" stroke="#1f2733" stroke-width="2"/>`
+       + `</g>`;
   });
 
   svg.innerHTML = s;
+  fitRings(svg);
+  watchSize(svg);
 
   /* byK, not the marker's index in the NodeList: the ring is redrawn from a
      filtered array, so position in the list is not a record identity. */
@@ -122,8 +156,6 @@ export function drawDonut(events, all, win) {
                + `<br><span class="tip-when">${el.dataset.when}</span>`;
     el.addEventListener('mousemove', ev => showTip(ev, html));
     el.addEventListener('mouseleave', hideTip);
-    el.addEventListener('mouseenter', () => el.setAttribute('r', '9'));
-    el.addEventListener('mouseleave', () => el.setAttribute('r', '7'));
     el.addEventListener('focus', () => {
       const r = el.getBoundingClientRect();
       showTip({ clientX: r.left + r.width / 2, clientY: r.bottom }, html);
@@ -136,4 +168,29 @@ export function drawDonut(events, all, win) {
       }
     });
   });
+}
+
+/* ---- status ring width ------------------------------------------------------
+   One unit, floored at one screen pixel. Reads the drawn width against the
+   viewBox, so it follows index.html's sizing rule without repeating it. A
+   hidden donut (another tab is showing) measures 0 and is left alone; the
+   observer below fires again when the tab is shown and the donut gets a size. */
+const GAP_OUT = 5.5;          // outer edge of the white gap, in units
+
+function fitRings(svg) {
+  const px = svg.getBoundingClientRect().width;
+  const vb = svg.viewBox.baseVal;
+  if (!px || !vb || !vb.width) return;
+  const w = Math.max(1, vb.width / px);          // units in one screen pixel, at least 1
+  svg.querySelectorAll('.rk-st').forEach(c => {
+    c.setAttribute('r', (GAP_OUT + w / 2).toFixed(3));
+    c.setAttribute('stroke-width', w.toFixed(3));
+  });
+}
+
+let watched = null;
+function watchSize(svg) {
+  if (watched === svg || typeof ResizeObserver === 'undefined') return;
+  watched = svg;
+  new ResizeObserver(() => fitRings(svg)).observe(svg);
 }

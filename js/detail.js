@@ -54,7 +54,8 @@
    ============================================================================= */
 
 import {
-  COL, NAME, SHORT, months, monthOf, esc, eventName, sysLink, typeLink
+  COL, NAME, SHORT, months, monthOf, esc, eventName, sysLink, typeLink,
+  STATUS, statusKey
 } from './config.js';
 import { setExtraReserve, onViewChange } from './ui.js';
 /* Downward dependencies are not a field any more. Upward is the source of
@@ -408,6 +409,35 @@ export function refLinkHTML(e) {
     + ` aria-label="${esc(label)}" title="${esc(label)}">${DL_SVG}</a>`;
 }
 
+/* THE STATUS LABEL. One builder for the record panel's Status fact and the
+   table's Status column, so the two cannot drift apart. Three outcomes:
+
+     known    the canonical label ("At risk", whatever case the file used) in
+              a light highlight of the status colour — .dt-st-<key>
+     unknown  the raw value as written, in the flagged-data red used for
+              dependency values that name nothing (.dt-st-bad shares that rule
+              with .dt-dep-bad). The marker draws no ring for it.
+     null     an empty string; each caller decides how empty reads — the panel
+              prints an em dash like every other empty fact, the table leaves
+              the cell blank like an empty Type or Frequency. */
+export function statusLabelHTML(e) {
+  const k = statusKey(e);
+  if (k === null) return '';
+  if (k === 'unknown') {
+    const why = 'Not a recognised status. Expected one of: '
+      + Object.values(STATUS).map(s => s.label).join(', ') + '.';
+    return `<span class="dt-st-bad" title="${esc(why)}">${esc(String(e.status))}</span>`;
+  }
+  return `<span class="dt-st dt-st-${k}">${esc(STATUS[k].label)}</span>`;
+}
+
+function statusFact(e) {
+  const html = statusLabelHTML(e);
+  return html
+    ? `<span class="dt-fact">Status: <b>${html}</b></span>`
+    : fact('Status:', '');
+}
+
 function headHTML(e) {
   const { label } = eventMonth(e);
   return `<div class="dt-head">`
@@ -420,6 +450,7 @@ function headHTML(e) {
     + fact('Type:', e.eventType, typeLink(e.sys, e.eventType))
     + fact('System:', NAME[e.sys] || SHORT[e.sys] || e.sys, sysLink(e.sys))
     + fact('Deadline:', label)
+    + statusFact(e)
     + fact('Reviewed by:', e.reviewedBy)
     + fact('Reviewed date:', e.reviewedDate)
     + `</div></div>`

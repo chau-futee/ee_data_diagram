@@ -14,7 +14,7 @@
 import {
   sysOrder, COL, NAME, SHORT, LBL_FS, months,
   spanMonths, windowYears, windowLabel, absMonthIn, monthLabelIn, hasData, esc,
-  eventName, sysLink
+  eventName, sysLink, statusKey
 } from './config.js';
 import { showTip, hideTip } from './ui.js';
 import { openDetail } from './detail.js';
@@ -114,6 +114,11 @@ export function drawTimeline(events, all, win) {
          still surfaces it in the DOM. */
       if (ev.id) m.dataset.id = ev.id;
       m.dataset.s = (ev.show === 0 ? '0' : '1');
+      /* The status ring is a box-shadow drawn by the stylesheet off data-st.
+         Only a known status is written; null and unknown values draw no ring
+         (the record panel is where an unknown value is called out). */
+      const st = statusKey(ev);
+      if (st && st !== 'unknown') m.dataset.st = st;
       /* _k is assigned once by initDetail() and never changes, so a click resolves to one record. */
       m.dataset.k = ev._k;
       const name = eventName(ev);

@@ -15,7 +15,7 @@
 
 import {
   DATA_URL, LOG_URL, sysOrder, year, firstYear, lastYear,
-  absMonth, SPAN, absMonthIn, spanMonths, inWindow, eventName, esc
+  absMonth, SPAN, absMonthIn, spanMonths, inWindow, eventName, esc, statusKey
 } from './config.js';
 import { drawLegend } from './legend.js';
 import { drawDonut } from './donut.js';
@@ -159,6 +159,16 @@ async function start() {
   try {
     const { events, meta } = await loadEvents();
     ALL = validate(events);
+
+    /* A status the page does not recognise is drawn with no ring and shown in
+       red in the record panel. Listed here as well so a misspelling in the
+       workbook is visible on load, not only when someone opens that record. */
+    const oddStatus = ALL.filter(e => statusKey(e) === 'unknown');
+    if (oddStatus.length) {
+      console.warn(`[status] ${oddStatus.length} record(s) carry an unrecognised status `
+        + `(expected Complete, Delayed or At risk, any case):\n  `
+        + oddStatus.map(e => `${eventName(e)}: ${JSON.stringify(e.status)}`).join('\n  '));
+    }
 
     /* Before any view draws: initDetail() stamps every event with its stable
        _k, and the two visuals write that into data-k as they render. */

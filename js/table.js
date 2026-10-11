@@ -19,9 +19,9 @@
 
 import {
   sysOrder, COL, NAME, SHORT, months, year, SPAN, firstYear,
-  absMonth, monthLabel, esc, eventName
+  absMonth, monthLabel, esc, eventName, STATUS, statusOrder, statusKey
 } from './config.js';
-import { detailPanelHTML, refLinkHTML } from './detail.js';
+import { detailPanelHTML, refLinkHTML, statusLabelHTML } from './detail.js';
 
 /* Sentinel for the "not set" option. Must survive being written into an HTML
    attribute — a U+0000 does not; the parser rewrites it and the option then
@@ -29,7 +29,18 @@ import { detailPanelHTML, refLinkHTML } from './detail.js';
 const NOTSET = '__notset__';
 
 /* Columns a row spans, for the empty state and the panel row. */
-const COLS = 6;
+const COLS = 7;
+
+/* Status filter values. A known status filters by its key, so "DELAYED" and
+   "Delayed" are one option, as they are one status everywhere else. An
+   unrecognised value is its own option under its raw text, prefixed so it can
+   never collide with a key ("atrisk" written without the space is unknown,
+   and must not select At risk) or with NOTSET. */
+const RAW = 'raw:';
+const statusVal = e => {
+  const k = statusKey(e);
+  return k === null ? NOTSET : k === 'unknown' ? RAW + String(e.status) : k;
+};
 
 export function drawTable(events) {
   const rows = [...events].sort((a, b) => absMonth(a) - absMonth(b));
@@ -39,6 +50,7 @@ export function drawTable(events) {
   const sysWithData = sysOrder.filter(s => events.some(e => e.sys === s));
   const typeVals = [...new Set(events.map(e => e.eventType).filter(Boolean))].sort();
   const freqVals = [...new Set(events.map(e => e.freq).filter(Boolean))].sort();
+  const rawStatusVals = [...new Set(events.map(statusVal).filter(v => v.startsWith(RAW)))].sort();
 
   document.getElementById('tblFilters').innerHTML =
      `<label>System <select id="fSys"></select></label>`
@@ -51,6 +63,7 @@ export function drawTable(events) {
         <select id="fFreq"${freqVals.length ? '' : ' disabled title="No frequency data in the dataset yet"'}>
           <option value="">Awaiting data</option>
         </select></label>`
+   + `<label>Status <select id="fStat"></select></label>`
    + `<label class="grow">Milestone
         <input id="fText" type="search" placeholder="search milestone text…" autocomplete="off">
       </label>`
@@ -62,6 +75,7 @@ export function drawTable(events) {
         fText = document.getElementById('fText'),
         fFreq = document.getElementById('fFreq'),
         fType = document.getElementById('fType'),
+        fStat = document.getElementById('fStat'),
         fClear = document.getElementById('fClear'),
         table  = document.getElementById('dataTable');
 
@@ -70,7 +84,7 @@ export function drawTable(events) {
      twelve months. One click picks a month and closes it. Months outside the
      window, and months that would put From after To, are greyed out, so the
      range can never be backwards. The full window is always offered; these two
-     do not narrow (they do narrow System, Type and Frequency).
+     do not narrow (they do narrow System, Type, Frequency and Status).
 
      range[0] is From and range[1] is To, as month indices into the window
      (0 = Jan of firstYear), the same numbers absMonth() returns. */
@@ -176,7 +190,7 @@ export function drawTable(events) {
   paintPickers();
 
   /* ---- faceted dropdowns ------------------------------------------------------
-     System, Type and Frequency each list only the values that still have
+     System, Type, Frequency and Status each list only the values that still have
      matching milestones under EVERY OTHER filter (the other two dropdowns,
      From/To, and the search text), with a count on each. A dropdown ignores
      its own selection when counting, so the reader can always switch within
@@ -184,7 +198,9 @@ export function drawTable(events) {
      currently selected, which stays (showing 0) so the dropdown never jumps
      back to "All" without the reader choosing it. From/To keep the full range.
 
-     A blank eventType or freq is counted under NOTSET, "— not set —". */
+     A blank eventType, freq or status is counted under NOTSET, "— not set —".
+     Status lists the known statuses in legend order, then any unrecognised
+     raw values, then NOTSET last, as the other dropdowns do. */
 
   const FACETS = [
     { key: 'sys',  el: fSys,  all: 'All systems',
@@ -193,11 +209,14 @@ export function drawTable(events) {
       values: [...typeVals, NOTSET], val: e => e.eventType || NOTSET, label: v => v },
     { key: 'freq', el: fFreq, all: 'All frequencies',
       values: [...freqVals, NOTSET], val: e => e.freq || NOTSET, label: v => v },
+    { key: 'stat', el: fStat, all: 'All statuses',
+      values: [...statusOrder, ...rawStatusVals, NOTSET], val: statusVal,
+      label: v => STATUS[v] ? STATUS[v].label : v.slice(RAW.length) },
   ];
 
   function currentFilters() {
     return {
-      sys: fSys.value, type: fType.value, freq: fFreq.value,
+      sys: fSys.value, type: fType.value, freq: fFreq.value, stat: fStat.value,
       from: range[0], to: range[1],
       q: fText.value.trim().toLowerCase()
     };
@@ -248,6 +267,7 @@ export function drawTable(events) {
         <td>${e.eventType ? esc(e.eventType) : ''}</td>
         <td>${esc(name)}${refLinkHTML(e)}</td>
         <td class="dline">${monthLabel(absMonth(e))}</td>
+        <td>${statusLabelHTML(e)}</td>
         <td class="num">${e.freq ? esc(e.freq) : ''}</td>
       </tr>`;
     if (!isOpen) return main;
@@ -267,7 +287,7 @@ export function drawTable(events) {
     table.innerHTML =
       `<thead><tr>
          <th class="exp"><span class="vh">Detail</span></th>
-         <th>System</th><th>Type</th><th>Milestone</th><th>Deadline</th><th>Frequency</th>
+         <th>System</th><th>Type</th><th>Milestone</th><th>Deadline</th><th>Status</th><th>Frequency</th>
        </tr></thead><tbody>${
         shown.length
         ? shown.map(rowHTML).join('')
@@ -284,12 +304,12 @@ export function drawTable(events) {
     fClear.disabled = !filtered && !fText.value;
   }
 
-  [fSys, fType, fFreq].forEach(el => el.addEventListener('change', render));
+  [fSys, fType, fFreq, fStat].forEach(el => el.addEventListener('change', render));
   fText.addEventListener('input', render);
   fClear.addEventListener('click', () => {
     fSys.value = ''; fType.value = ''; range[0] = 0; range[1] = SPAN - 1;
     closeCal(false); paintPickers();
-    fFreq.value = ''; fText.value = '';
+    fFreq.value = ''; fStat.value = ''; fText.value = '';
     render();
   });
 
