@@ -85,11 +85,12 @@ export const LINK = {
             },
   pg:     { url: 'https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/demand-side-management/energy-efficiency/energy-efficiency-potential-and-goals-studies/2025-potential-and-goals-study' },
   etrm:   { url: 'https://www.caetrm.com/dashboard/', types: { 'Measure Packages': '' } },
-  deer:   { url: 'https://cedars.cpuc.ca.gov/deer-resources/deer-versions/', types: { 'DEER Resolution': '' } },
-  cns:    { url: '', types: { 'CFR': 'https://www.ecfr.gov/',
-                        'CA Title 24': 'https://www.energy.ca.gov/programs-and-topics/programs/building-energy-efficiency-standards' }
+  deer:   { url: 'https://cedars.cpuc.ca.gov/deer-resources/', types: { 'DEER Resolution': 'https://cedars.cpuc.ca.gov/deer-resources/deer-versions/' } },
+  cns:    { url: '', types: { '10 CFR': 'https://www.ecfr.gov/current/title-10',
+                        'CA Title 24': 'https://www.energy.ca.gov/programs-and-topics/programs/building-energy-efficiency-standards',
+                        'CA Title 20': 'https://www.energy.ca.gov/rules-and-regulations/appliance-efficiency-regulations-title-20' }
           },
-  regulatory: { url: '', types: { 'CEC': '' } }
+  regulatory: { url: '', types: { 'Integrated Resource Planning (IRP) Transmission Planning Process (TPP)': 'https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-power-procurement/long-term-procurement-planning' } }
 };
 
 const linkText = v => (typeof v === 'string' ? v.trim() : '');

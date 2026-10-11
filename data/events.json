@@ -30,9 +30,9 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [
-        "IEPR Electric Generation Price Model",
-        "xyz"
+        "Decision Transmitting Electricity Resource Portfolios to the CAISO TPP"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -50,6 +50,7 @@
       "upDeps": [
         "IRP TPP Base Case Portfolio Adoption"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -67,6 +68,7 @@
       "upDeps": [
         "Staff Proposal Published"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -84,6 +86,7 @@
       "upDeps": [
         "Staff Proposal Workshop"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -101,6 +104,7 @@
       "upDeps": [
         "Opening Comments Due"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -118,6 +122,7 @@
       "upDeps": [
         "Reply Comments Due"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -135,6 +140,7 @@
       "upDeps": [
         "Evidentiary Hearing (Optional)"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -152,6 +158,7 @@
       "upDeps": [
         "Briefing (Optional)"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -169,6 +176,7 @@
       "upDeps": [
         "Proposed Decision Published"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -186,6 +194,7 @@
       "upDeps": [
         "Proposed Decision Adopted"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -203,6 +212,7 @@
       "upDeps": [
         "Draft Resolution (with Draft Calculator) Published"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -220,6 +230,7 @@
       "upDeps": [
         "Draft ACC Workshop"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -235,6 +246,7 @@
       "d": null,
       "freq": "Annual",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -252,6 +264,7 @@
       "upDeps": [
         "Claims Spec Planning"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -269,6 +282,7 @@
       "upDeps": [
         "Claims Data Spec Update"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -284,6 +298,7 @@
       "d": null,
       "freq": "Annual",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -299,6 +314,7 @@
       "d": null,
       "freq": "Annual",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -317,6 +333,7 @@
         "CET Development Planning",
         "CET Planning"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -334,6 +351,7 @@
       "upDeps": [
         "CET Data Spec Update"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -351,6 +369,7 @@
       "upDeps": [
         "CET UAT"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -368,6 +387,7 @@
       "upDeps": [
         "CET UAT QC"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -385,6 +405,7 @@
       "upDeps": [
         "2026 Deploy CET Web Development Changes"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -402,6 +423,7 @@
       "upDeps": [
         "Resolution Adoption"
       ],
+      "status": null,
       "reference": "https://cedars-public-downloads.s3.us-gov-west-1.amazonaws.com/files/2026v25-1_AvoidedCostData_corrected.zip",
       "reviewedBy": "",
       "reviewedDate": "",
@@ -420,6 +442,7 @@
         "Web Development CET Merge Request",
         "CET Biennial Avoided Cost Updates"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -435,6 +458,7 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [],
+      "status": "Complete",
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -450,6 +474,7 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [],
+      "status": "Complete",
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -465,7 +490,8 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [],
-      "reference": "https://www.caetrm.com/media/reference-documents/Resolution_5350.zip",
+      "status": "Complete",
+      "reference": "https://docs.cpuc.ca.gov/PublishedDocs/Published/G000/M619/K777/619777943.PDF",
       "reviewedBy": "",
       "reviewedDate": "",
       "show": 1
@@ -480,6 +506,7 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [],
+      "status": "Complete",
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -495,6 +522,7 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -510,6 +538,7 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -525,6 +554,7 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [],
+      "status": "Complete",
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -540,6 +570,7 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -555,6 +586,7 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -570,6 +602,7 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -585,6 +618,7 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -600,6 +634,7 @@
       "d": null,
       "freq": "Annual",
       "upDeps": [],
+      "status": "Complete",
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -617,6 +652,7 @@
       "upDeps": [
         "CET Final Update"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -634,6 +670,7 @@
       "upDeps": [
         "CET Final Update"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -649,6 +686,7 @@
       "d": null,
       "freq": "Monthly",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -664,6 +702,7 @@
       "d": null,
       "freq": "Annual",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -682,6 +721,7 @@
         "CET Final Update",
         "2026 Claims Spec UAT"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -697,6 +737,7 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -715,6 +756,7 @@
         "CET Final Update",
         "2026 Claims Spec UAT"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -733,6 +775,7 @@
         "CET Final Update",
         "2026 Claims Spec UAT"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -751,6 +794,7 @@
         "CET Final Update",
         "2026 Claims Spec UAT"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -766,6 +810,7 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -781,6 +826,7 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -796,6 +842,7 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -813,6 +860,7 @@
       "upDeps": [
         "Study Launch Workshop & Work Plan"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -830,6 +878,7 @@
       "upDeps": [
         "Measure Characterization"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -847,6 +896,7 @@
       "upDeps": [
         "Scenarios"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -864,6 +914,7 @@
       "upDeps": [
         "Draft Results"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -881,6 +932,7 @@
       "upDeps": [
         "Draft Results Comment Period"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -898,6 +950,7 @@
       "upDeps": [
         "Proposed Decision Mailed"
       ],
+      "status": null,
       "reference": null,
       "reviewedBy": "",
       "reviewedDate": "",
@@ -905,17 +958,18 @@
     },
     {
       "sys": "regulatory",
-      "eventType": "CEC",
-      "event": "IEPR Electric Generation Price Model",
-      "py": "2025",
+      "eventType": "Integrated Resource Planning (IRP) Transmission Planning Process (TPP)",
+      "event": "Decision Transmitting Electricity Resource Portfolios to the CAISO TPP",
+      "py": "2026-2027",
       "y": 2026,
-      "m": 6,
-      "d": null,
+      "m": 2,
+      "d": 26,
       "freq": "Annual",
       "upDeps": [],
-      "reference": null,
-      "reviewedBy": "",
-      "reviewedDate": "",
+      "status": "Complete",
+      "reference": "https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-power-procurement/long-term-procurement-planning/2024-27-irp-cycle-events-and-materials/assumptions-for-the-2026-2027-tpp",
+      "reviewedBy": "Chau Nguyen",
+      "reviewedDate": "2026-10-05",
       "show": 1
     },
     {
@@ -928,6 +982,7 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "Resolution E-5474",
       "reviewedDate": "9/18/2026",
@@ -943,6 +998,7 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "Resolution E-5474",
       "reviewedDate": "9/18/2026",
@@ -958,6 +1014,7 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "Draft Resolution E-5474",
       "reviewedDate": "9/18/2026",
@@ -973,6 +1030,7 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "Draft Resolution E-5474",
       "reviewedDate": "9/18/2026",
@@ -980,7 +1038,7 @@
     },
     {
       "sys": "cns",
-      "eventType": "CFR",
+      "eventType": "10 CFR",
       "event": "Room AC",
       "py": "",
       "y": 2026,
@@ -988,6 +1046,7 @@
       "d": 26,
       "freq": "",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "Draft Resolution E-5474",
       "reviewedDate": "9/18/2026",
@@ -995,7 +1054,7 @@
     },
     {
       "sys": "cns",
-      "eventType": "CFR",
+      "eventType": "10 CFR",
       "event": "Residential dishwashers",
       "py": "",
       "y": 2027,
@@ -1003,6 +1062,7 @@
       "d": 23,
       "freq": "",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "Draft Resolution E-5474",
       "reviewedDate": "9/18/2026",
@@ -1010,7 +1070,7 @@
     },
     {
       "sys": "cns",
-      "eventType": "CFR",
+      "eventType": "10 CFR",
       "event": "Electric motors",
       "py": "",
       "y": 2027,
@@ -1018,6 +1078,7 @@
       "d": 1,
       "freq": "",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "Draft Resolution E-5474",
       "reviewedDate": "9/18/2026",
@@ -1025,7 +1086,7 @@
     },
     {
       "sys": "cns",
-      "eventType": "CFR",
+      "eventType": "10 CFR",
       "event": "Conventional cooking products",
       "py": "",
       "y": 2028,
@@ -1033,6 +1094,7 @@
       "d": 31,
       "freq": "",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "Draft Resolution E-5474",
       "reviewedDate": "9/18/2026",
@@ -1040,7 +1102,7 @@
     },
     {
       "sys": "cns",
-      "eventType": "CFR",
+      "eventType": "10 CFR",
       "event": "Clothes dryers",
       "py": "",
       "y": 2028,
@@ -1048,6 +1110,7 @@
       "d": 1,
       "freq": "",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "Draft Resolution E-5474",
       "reviewedDate": "9/18/2026",
@@ -1055,7 +1118,7 @@
     },
     {
       "sys": "cns",
-      "eventType": "CFR",
+      "eventType": "10 CFR",
       "event": "Clothes washers",
       "py": "",
       "y": 2028,
@@ -1063,6 +1126,7 @@
       "d": 1,
       "freq": "",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "Draft Resolution E-5474",
       "reviewedDate": "9/18/2026",
@@ -1070,7 +1134,7 @@
     },
     {
       "sys": "cns",
-      "eventType": "CFR",
+      "eventType": "10 CFR",
       "event": "Circulator pumps",
       "py": "",
       "y": 2028,
@@ -1078,6 +1142,7 @@
       "d": 22,
       "freq": "",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "Draft Resolution E-5474",
       "reviewedDate": "9/18/2026",
@@ -1085,7 +1150,7 @@
     },
     {
       "sys": "cns",
-      "eventType": "CFR",
+      "eventType": "10 CFR",
       "event": "Consumer furnaces",
       "py": "",
       "y": 2028,
@@ -1093,6 +1158,7 @@
       "d": 18,
       "freq": "",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "Draft Resolution E-5474",
       "reviewedDate": "9/18/2026",
@@ -1100,7 +1166,7 @@
     },
     {
       "sys": "cns",
-      "eventType": "CFR",
+      "eventType": "10 CFR",
       "event": "Consumer storage-type water heaters",
       "py": "",
       "y": 2029,
@@ -1108,6 +1174,7 @@
       "d": 6,
       "freq": "",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "Draft Resolution E-5474",
       "reviewedDate": "9/18/2026",
@@ -1115,7 +1182,7 @@
     },
     {
       "sys": "cns",
-      "eventType": "CFR",
+      "eventType": "10 CFR",
       "event": "Consumer refrigerators, refrigerator-freezers, and freezers",
       "py": "",
       "y": 2029,
@@ -1123,6 +1190,7 @@
       "d": 31,
       "freq": "",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "Draft Resolution E-5474",
       "reviewedDate": "9/18/2026",
@@ -1130,7 +1198,7 @@
     },
     {
       "sys": "cns",
-      "eventType": "CFR",
+      "eventType": "10 CFR",
       "event": "Miscellaneous refrigeration products",
       "py": "",
       "y": 2029,
@@ -1138,6 +1206,7 @@
       "d": 31,
       "freq": "",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "Draft Resolution E-5474",
       "reviewedDate": "9/18/2026",
@@ -1145,7 +1214,7 @@
     },
     {
       "sys": "cns",
-      "eventType": "CFR",
+      "eventType": "10 CFR",
       "event": "Air-cooled commercial package AC and HP >= 65 kBtu/h",
       "py": "",
       "y": 2029,
@@ -1153,6 +1222,7 @@
       "d": 1,
       "freq": "",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "Draft Resolution E-5474",
       "reviewedDate": "9/18/2026",
@@ -1160,7 +1230,7 @@
     },
     {
       "sys": "cns",
-      "eventType": "CFR",
+      "eventType": "10 CFR",
       "event": "Distribution transformers",
       "py": "",
       "y": 2029,
@@ -1168,6 +1238,7 @@
       "d": 23,
       "freq": "",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "Draft Resolution E-5474",
       "reviewedDate": "9/18/2026",
@@ -1183,6 +1254,7 @@
       "d": null,
       "freq": "Triennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "CEC",
       "reviewedDate": "",
@@ -1198,6 +1270,7 @@
       "d": null,
       "freq": "Triennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "Energy Code Ace",
       "reviewedDate": "9/24/2026",
@@ -1213,6 +1286,7 @@
       "d": 16,
       "freq": "Triennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "Energy Code Ace",
       "reviewedDate": "9/24/2026",
@@ -1228,6 +1302,7 @@
       "d": 1,
       "freq": "Triennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "CEC",
       "reviewedDate": "9/24/2026",
@@ -1243,6 +1318,7 @@
       "d": 23,
       "freq": "Triennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "CEC",
       "reviewedDate": "9/24/2026",
@@ -1258,6 +1334,7 @@
       "d": 24,
       "freq": "Triennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "CEC",
       "reviewedDate": "9/24/2026",
@@ -1273,6 +1350,7 @@
       "d": null,
       "freq": "Triennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "CEC",
       "reviewedDate": "9/24/2026",
@@ -1288,6 +1366,7 @@
       "d": null,
       "freq": "Triennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "CEC",
       "reviewedDate": "9/24/2026",
@@ -1303,6 +1382,7 @@
       "d": null,
       "freq": "Triennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "CEC",
       "reviewedDate": "9/24/2026",
@@ -1318,6 +1398,7 @@
       "d": null,
       "freq": "Triennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "CEC",
       "reviewedDate": "9/24/2026",
@@ -1333,6 +1414,7 @@
       "d": 1,
       "freq": "Triennial",
       "upDeps": [],
+      "status": null,
       "reference": null,
       "reviewedBy": "CEC",
       "reviewedDate": "9/24/2026",
