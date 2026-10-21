@@ -30,7 +30,7 @@
       "d": null,
       "freq": "Biennial",
       "upDeps": [
-        "Decision Transmitting Electricity Resource Portfolios to the CAISO TPP"
+        "2026 Decision Transmitting Electricity Resource Portfolios to the CAISO TPP"
       ],
       "status": null,
       "reference": null,
@@ -960,7 +960,7 @@
       "sys": "regulatory",
       "eventType": "Integrated Resource Planning (IRP) Transmission Planning Process (TPP)",
       "event": "Decision Transmitting Electricity Resource Portfolios to the CAISO TPP",
-      "py": "2026-2027",
+      "py": "2026",
       "y": 2026,
       "m": 2,
       "d": 26,
